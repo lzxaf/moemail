@@ -121,6 +121,28 @@
     "saveSuccess": "設定を保存しました",
     "saveFailed": "設定の保存に失敗しました"
   },
+  "mailbox": {
+    "title": "メールボックス管理",
+    "total": "有効なメールボックス：{count} 件",
+    "searchPlaceholder": "アドレス、ユーザー名、名前で検索",
+    "loading": "読み込み中...",
+    "empty": "有効なメールボックスが見つかりません",
+    "owner": "所有者：{name}",
+    "permanent": "無期限",
+    "expiresAt": "期限：{date}",
+    "delete": "メールボックスを削除",
+    "deleteAddress": "メールボックス {address} を削除",
+    "deleteTitle": "ユーザーのメールボックスを削除",
+    "deleteConfirm": "{owner} のメールボックス {address} を削除しますか？中のメールもすべて完全に削除され、復元できません。",
+    "deleteConfirmButton": "削除",
+    "cancel": "キャンセル",
+    "deleteSuccess": "メールボックスを削除しました",
+    "deleteFailed": "メールボックスの削除に失敗しました",
+    "loadFailed": "メールボックス一覧の取得に失敗しました",
+    "previous": "前へ",
+    "next": "次へ",
+    "page": "{current} / {total} ページ"
+  },
   "promote": {
     "title": "ロール管理",
     "description": "ユーザーロールを管理（皇帝のみ利用可能）",

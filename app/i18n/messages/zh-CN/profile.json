@@ -121,6 +121,28 @@
     "saveSuccess": "配置保存成功",
     "saveFailed": "保存配置失败"
   },
+  "mailbox": {
+    "title": "邮箱管理",
+    "total": "共 {count} 个有效邮箱",
+    "searchPlaceholder": "搜索邮箱地址、用户名或昵称",
+    "loading": "加载中...",
+    "empty": "未找到有效邮箱",
+    "owner": "属于 {name}",
+    "permanent": "永久有效",
+    "expiresAt": "到期：{date}",
+    "delete": "删除邮箱",
+    "deleteAddress": "删除邮箱 {address}",
+    "deleteTitle": "删除用户邮箱",
+    "deleteConfirm": "确定删除 {owner} 的邮箱 {address} 吗？其中所有邮件也会永久删除，且无法恢复。",
+    "deleteConfirmButton": "删除",
+    "cancel": "取消",
+    "deleteSuccess": "邮箱已删除",
+    "deleteFailed": "删除邮箱失败",
+    "loadFailed": "获取邮箱列表失败",
+    "previous": "上一页",
+    "next": "下一页",
+    "page": "第 {current} / {total} 页"
+  },
   "promote": {
     "title": "角色管理",
     "description": "管理用户角色（仅皇帝可用）",

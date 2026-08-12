@@ -121,6 +121,28 @@
     "saveSuccess": "Configuration saved successfully",
     "saveFailed": "Failed to save configuration"
   },
+  "mailbox": {
+    "title": "Mailbox Management",
+    "total": "{count} active mailboxes",
+    "searchPlaceholder": "Search mailbox, username, or name",
+    "loading": "Loading...",
+    "empty": "No active mailboxes found",
+    "owner": "Owned by {name}",
+    "permanent": "Permanent",
+    "expiresAt": "Expires: {date}",
+    "delete": "Delete mailbox",
+    "deleteAddress": "Delete mailbox {address}",
+    "deleteTitle": "Delete User Mailbox",
+    "deleteConfirm": "Delete {owner}'s mailbox {address}? All messages in it will also be permanently deleted and cannot be recovered.",
+    "deleteConfirmButton": "Delete",
+    "cancel": "Cancel",
+    "deleteSuccess": "Mailbox deleted",
+    "deleteFailed": "Failed to delete mailbox",
+    "loadFailed": "Failed to load mailboxes",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {current} / {total}"
+  },
   "promote": {
     "title": "Role Management",
     "description": "Manage user roles (Emperor only)",
