@@ -88,7 +88,7 @@ export async function checkPermission(permission: Permission) {
   return hasPermission(userRoleNames as Role[], permission)
 }
 
-export async function checkMailboxAccess(ownerId: string | null) {
+export async function checkMailboxAccess(ownerId: string | null | undefined) {
   const userId = await getUserId()
 
   if (!userId || !ownerId) return false
