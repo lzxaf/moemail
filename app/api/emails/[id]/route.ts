@@ -5,6 +5,7 @@ import { eq, and, lt, or, sql, ne, isNull } from "drizzle-orm"
 import { encodeCursor, decodeCursor } from "@/lib/cursor"
 import { getUserId } from "@/lib/apiKey"
 import { checkBasicSendPermission } from "@/lib/send-permissions"
+import { checkMailboxAccess } from "@/lib/auth"
 
 export const runtime = "edge"
 
@@ -12,19 +13,14 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = await getUserId()
-
   try {
     const db = createDb()
     const { id } = await params
     const email = await db.query.emails.findFirst({
-      where: and(
-        eq(emails.id, id),
-        eq(emails.userId, userId!)
-      )
+      where: eq(emails.id, id)
     })
 
-    if (!email) {
+    if (!email || !await checkMailboxAccess(email.userId)) {
       return NextResponse.json(
         { error: "邮箱不存在或无权限删除" },
         { status: 403 }
@@ -44,7 +40,7 @@ export async function DELETE(
       { status: 500 }
     )
   }
-} 
+}
 
 const PAGE_SIZE = 20
 
@@ -72,13 +68,10 @@ export async function GET(
     }
 
     const email = await db.query.emails.findFirst({
-      where: and(
-        eq(emails.id, id),
-        eq(emails.userId, userId!)
-      )
+      where: eq(emails.id, id)
     })
 
-    if (!email) {
+    if (!email || !await checkMailboxAccess(email.userId)) {
       return NextResponse.json(
         { error: "无权限查看" },
         { status: 403 }
@@ -87,8 +80,8 @@ export async function GET(
 
     const baseConditions = and(
       eq(messages.emailId, id),
-      messageType === 'sent' 
-        ? eq(messages.type, "sent") 
+      messageType === 'sent'
+        ? eq(messages.type, "sent")
         : or(
             ne(messages.type, "sent"),
             isNull(messages.type)
@@ -117,7 +110,7 @@ export async function GET(
     }
 
     const orderByTime = messageType === 'sent' ? messages.sentAt : messages.receivedAt
-    
+
     const results = await db.query.messages.findMany({
       where: and(...conditions),
       orderBy: (messages, { desc }) => [
@@ -126,11 +119,11 @@ export async function GET(
       ],
       limit: PAGE_SIZE + 1
     })
-    
+
     const hasMore = results.length > PAGE_SIZE
-    const nextCursor = hasMore 
+    const nextCursor = hasMore
       ? encodeCursor(
-          messageType === 'sent' 
+          messageType === 'sent'
             ? results[PAGE_SIZE - 1].sentAt!.getTime()
             : results[PAGE_SIZE - 1].receivedAt.getTime(),
           results[PAGE_SIZE - 1].id
@@ -138,7 +131,7 @@ export async function GET(
       : null
     const messageList = hasMore ? results.slice(0, PAGE_SIZE) : results
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       messages: messageList.map(msg => ({
         id: msg.id,
         from_address: msg?.fromAddress,
@@ -159,4 +152,4 @@ export async function GET(
       { status: 500 }
     )
   }
-} 
+}

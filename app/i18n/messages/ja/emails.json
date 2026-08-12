@@ -13,7 +13,9 @@
     "messageContent": "メール内容",
     "selectMessage": "メールを選択して詳細を表示",
     "backToEmailList": "← メールボックス一覧に戻る",
-    "backToMessageList": "← メッセージ一覧に戻る"
+    "backToMessageList": "← メッセージ一覧に戻る",
+    "managedMailbox": "{name} のメールボックスを管理中",
+    "exitManagedMailbox": "終了"
   },
   "list": {
     "emailCount": "{count}/{max} 個のメールボックス",

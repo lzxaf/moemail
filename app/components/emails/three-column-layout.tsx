@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { EmailList } from "./email-list"
 import { MessageListContainer } from "./message-list-container"
 import { MessageView } from "./message-view"
@@ -10,20 +10,32 @@ import { cn } from "@/lib/utils"
 import { useCopy } from "@/hooks/use-copy"
 import { useSendPermission } from "@/hooks/use-send-permission"
 import { Copy } from "lucide-react"
+import { ArrowLeft, Eye } from "lucide-react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 interface Email {
   id: string
   address: string
 }
 
-export function ThreeColumnLayout() {
+interface ManagedUser {
+  id: string
+  name: string | null
+  username: string | null
+  email: string | null
+}
+
+export function ThreeColumnLayout({ managedUser }: { managedUser?: ManagedUser }) {
   const t = useTranslations("emails.layout")
+  const locale = useLocale()
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null)
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null)
   const [selectedMessageType, setSelectedMessageType] = useState<'received' | 'sent'>('received')
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const { copyToClipboard } = useCopy()
   const { canSend: canSendEmails } = useSendPermission()
+  const managedUserLabel = managedUser?.name || managedUser?.username || managedUser?.email || ""
 
   const columnClass = "border-2 border-primary/20 bg-background rounded-lg overflow-hidden flex flex-col"
   const headerClass = "p-2 border-b-2 border-primary/20 flex items-center justify-between shrink-0"
@@ -53,6 +65,22 @@ export function ThreeColumnLayout() {
 
   return (
     <div className="pb-5 pt-20 h-full flex flex-col">
+      {managedUser && (
+        <div className="mb-3 p-2.5 rounded-lg border-l-4 border-amber-500 bg-amber-500/10 flex items-center justify-between gap-2 text-xs sm:text-sm shrink-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <Eye className="w-4 h-4 text-amber-600 shrink-0" />
+            <span className="font-medium truncate">
+              {t("managedMailbox", { name: managedUserLabel })}
+            </span>
+          </div>
+          <Button variant="outline" size="sm" className="h-7 px-2.5 text-xs shrink-0" asChild>
+            <Link href={`/${locale}/profile`}>
+              <ArrowLeft className="w-3.5 h-3.5 mr-1" />
+              {t("exitManagedMailbox")}
+            </Link>
+          </Button>
+        </div>
+      )}
       {/* 桌面端三栏布局 */}
       <div className="hidden lg:grid grid-cols-12 gap-4 h-full min-h-0">
         <div className={cn("col-span-3", columnClass)}>
@@ -66,6 +94,7 @@ export function ThreeColumnLayout() {
                 setSelectedMessageId(null)
               }}
               selectedEmailId={selectedEmail?.id}
+              managedUserId={managedUser?.id}
             />
           </div>
         </div>
@@ -81,9 +110,9 @@ export function ThreeColumnLayout() {
                       <Copy className="size-4" />
                     </div>
                   </div>
-                  {selectedEmail && canSendEmails && (
-                    <SendDialog 
-                      emailId={selectedEmail.id} 
+                  {selectedEmail && canSendEmails && !managedUser && (
+                    <SendDialog
+                      emailId={selectedEmail.id}
                       fromAddress={selectedEmail.address}
                       onSendSuccess={handleSendSuccess}
                     />
@@ -101,6 +130,7 @@ export function ThreeColumnLayout() {
                 onMessageSelect={handleMessageSelect}
                 selectedMessageId={selectedMessageId}
                 refreshTrigger={refreshTrigger}
+                managed={!!managedUser}
               />
             </div>
           )}
@@ -119,6 +149,7 @@ export function ThreeColumnLayout() {
                 messageId={selectedMessageId}
                 messageType={selectedMessageType}
                 onClose={() => setSelectedMessageId(null)}
+                managed={!!managedUser}
               />
             </div>
           )}
@@ -139,6 +170,7 @@ export function ThreeColumnLayout() {
                     setSelectedEmail(email)
                   }}
                   selectedEmailId={selectedEmail?.id}
+                  managedUserId={managedUser?.id}
                 />
               </div>
             </>
@@ -162,9 +194,9 @@ export function ThreeColumnLayout() {
                       <Copy className="size-4" />
                     </div>
                   </div>
-                  {canSendEmails && (
-                    <SendDialog 
-                      emailId={selectedEmail.id} 
+                  {canSendEmails && !managedUser && (
+                    <SendDialog
+                      emailId={selectedEmail.id}
                       fromAddress={selectedEmail.address}
                       onSendSuccess={handleSendSuccess}
                     />
@@ -177,6 +209,7 @@ export function ThreeColumnLayout() {
                   onMessageSelect={handleMessageSelect}
                   selectedMessageId={selectedMessageId}
                   refreshTrigger={refreshTrigger}
+                  managed={!!managedUser}
                 />
               </div>
             </div>
@@ -199,6 +232,7 @@ export function ThreeColumnLayout() {
                   messageId={selectedMessageId}
                   messageType={selectedMessageType}
                   onClose={() => setSelectedMessageId(null)}
+                  managed={!!managedUser}
                 />
               </div>
             </div>
@@ -207,4 +241,4 @@ export function ThreeColumnLayout() {
       </div>
     </div>
   )
-} 
+}

@@ -11,6 +11,7 @@ export const PERMISSIONS = {
   MANAGE_EMAIL: 'manage_email',
   MANAGE_WEBHOOK: 'manage_webhook',
   PROMOTE_USER: 'promote_user',
+  MANAGE_USERS_MAILBOX: 'manage_users_mailbox',
   MANAGE_CONFIG: 'manage_config',
   MANAGE_API_KEY: 'manage_api_key',
 } as const;
@@ -33,4 +34,4 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
 
 export function hasPermission(userRoles: Role[], permission: Permission): boolean {
   return userRoles.some(role => ROLE_PERMISSIONS[role]?.includes(permission));
-} 
+}

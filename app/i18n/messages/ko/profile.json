@@ -145,6 +145,8 @@
     "deleteConfirmButton": "삭제",
     "cancel": "취소",
     "deleteSuccess": "사용자가 삭제되었습니다",
-    "deleteFailed": "사용자 삭제에 실패했습니다"
+    "deleteFailed": "사용자 삭제에 실패했습니다",
+    "viewMailbox": "사용자 메일함 열기",
+    "viewMailboxFor": "{name}의 메일함 열기"
   }
 }

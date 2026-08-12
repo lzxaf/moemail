@@ -2,9 +2,11 @@
 
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { Crown, Gem, Sword, User2, Loader2, Search, ChevronLeft, ChevronRight, Users, Trash2 } from "lucide-react"
+import { Crown, Gem, Sword, User2, Loader2, Search, ChevronLeft, ChevronRight, Users, Trash2, Mail } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect, useCallback } from "react"
+import { useLocale } from "next-intl"
+import Link from "next/link"
 import { useToast } from "@/components/ui/use-toast"
 import { ROLES, Role } from "@/lib/permissions"
 import {
@@ -57,6 +59,7 @@ export function PromotePanel() {
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null)
   const [userToDelete, setUserToDelete] = useState<UserItem | null>(null)
   const { toast } = useToast()
+  const locale = useLocale()
 
   const roleNames = {
     [ROLES.EMPEROR]: tCard("roles.EMPEROR"),
@@ -270,6 +273,22 @@ export function PromotePanel() {
                           </SelectContent>
                         </Select>
                       </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-primary"
+                        asChild
+                      >
+                        <Link
+                          href={`/${locale}/moe?userId=${user.id}`}
+                          title={t("viewMailbox")}
+                          aria-label={t("viewMailboxFor", {
+                            name: user.name || user.username || user.email || "",
+                          })}
+                        >
+                          <Mail className="w-4 h-4" />
+                        </Link>
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"

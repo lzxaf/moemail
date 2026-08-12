@@ -13,7 +13,9 @@
     "messageContent": "메시지 내용",
     "selectMessage": "세부 정보를 보려면 메시지를 선택하세요",
     "backToEmailList": "← 이메일 목록으로 돌아가기",
-    "backToMessageList": "← 메시지 목록으로 돌아가기"
+    "backToMessageList": "← 메시지 목록으로 돌아가기",
+    "managedMailbox": "{name}의 메일함 관리 중",
+    "exitManagedMailbox": "나가기"
   },
   "list": {
     "emailCount": "{count}/{max} 이메일",

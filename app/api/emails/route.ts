@@ -4,17 +4,23 @@ import { NextResponse } from "next/server"
 import { emails } from "@/lib/schema"
 import { encodeCursor, decodeCursor } from "@/lib/cursor"
 import { getUserId } from "@/lib/apiKey"
+import { checkMailboxAccess } from "@/lib/auth"
 
 export const runtime = "edge"
 
 const PAGE_SIZE = 20
 
 export async function GET(request: Request) {
-  const userId = await getUserId()
+  const currentUserId = await getUserId()
 
   const { searchParams } = new URL(request.url)
   const cursor = searchParams.get('cursor')
-  
+  const userId = searchParams.get('userId') || currentUserId
+
+  if (!await checkMailboxAccess(userId)) {
+    return NextResponse.json({ error: "无权限查看" }, { status: 403 })
+  }
+
   const db = createDb()
 
   try {
@@ -51,9 +57,9 @@ export async function GET(request: Request) {
       ],
       limit: PAGE_SIZE + 1
     })
-    
+
     const hasMore = results.length > PAGE_SIZE
-    const nextCursor = hasMore 
+    const nextCursor = hasMore
       ? encodeCursor(
           results[PAGE_SIZE - 1].createdAt.getTime(),
           results[PAGE_SIZE - 1].id
@@ -61,7 +67,7 @@ export async function GET(request: Request) {
       : null
     const emailList = hasMore ? results.slice(0, PAGE_SIZE) : results
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       emails: emailList,
       nextCursor,
       total: totalCount
@@ -73,4 +79,4 @@ export async function GET(request: Request) {
       { status: 500 }
     )
   }
-} 
+}

@@ -35,6 +35,7 @@ interface Email {
 interface EmailListProps {
   onEmailSelect: (email: Email | null) => void
   selectedEmailId?: string
+  managedUserId?: string
 }
 
 interface EmailResponse {
@@ -43,7 +44,7 @@ interface EmailResponse {
   total: number
 }
 
-export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
+export function EmailList({ onEmailSelect, selectedEmailId, managedUserId }: EmailListProps) {
   const { data: session } = useSession()
   const { config } = useConfig()
   const { role } = useUserRole()
@@ -64,9 +65,12 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
       if (cursor) {
         url.searchParams.set('cursor', cursor)
       }
+      if (managedUserId) {
+        url.searchParams.set('userId', managedUserId)
+      }
       const response = await fetch(url)
       const data = await response.json() as EmailResponse
-      
+
       if (!cursor) {
         const newEmails = data.emails
         const oldEmails = emails
@@ -143,7 +147,7 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
         title: t("success"),
         description: t("deleteSuccess")
       })
-      
+
       if (selectedEmailId === email.id) {
         onEmailSelect(null)
       }
@@ -182,9 +186,9 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
               )}
             </span>
           </div>
-          <CreateDialog onEmailCreated={handleRefresh} />
+          {!managedUserId && <CreateDialog onEmailCreated={handleRefresh} />}
         </div>
-        
+
         <div className="flex-1 overflow-auto p-2" onScroll={handleScroll}>
           {loading ? (
             <div className="text-center text-sm text-gray-500">{t("loading")}</div>
@@ -210,8 +214,8 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
                       )}
                     </div>
                   </div>
-                  <div className="opacity-0 group-hover:opacity-100 flex gap-1" onClick={(e) => e.stopPropagation()}>
-                    <ShareDialog emailId={email.id} emailAddress={email.address} />
+                  <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 flex gap-1" onClick={(e) => e.stopPropagation()}>
+                    {!managedUserId && <ShareDialog emailId={email.id} emailAddress={email.address} />}
                     <Button
                       variant="ghost"
                       size="icon"
@@ -220,6 +224,7 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
                         e.stopPropagation()
                         setEmailToDelete(email)
                       }}
+                      aria-label={tCommon("delete")}
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
@@ -261,4 +266,4 @@ export function EmailList({ onEmailSelect, selectedEmailId }: EmailListProps) {
       </AlertDialog>
     </>
   )
-} 
+}

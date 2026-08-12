@@ -145,6 +145,8 @@
     "deleteConfirmButton": "削除",
     "cancel": "キャンセル",
     "deleteSuccess": "ユーザーを削除しました",
-    "deleteFailed": "ユーザーの削除に失敗しました"
+    "deleteFailed": "ユーザーの削除に失敗しました",
+    "viewMailbox": "ユーザーのメールボックスを開く",
+    "viewMailboxFor": "{name} のメールボックスを開く"
   }
 }

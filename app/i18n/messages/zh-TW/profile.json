@@ -145,6 +145,8 @@
     "deleteConfirmButton": "刪除",
     "cancel": "取消",
     "deleteSuccess": "使用者刪除成功",
-    "deleteFailed": "刪除使用者失敗"
+    "deleteFailed": "刪除使用者失敗",
+    "viewMailbox": "進入使用者郵箱",
+    "viewMailboxFor": "進入 {name} 的郵箱"
   }
 }

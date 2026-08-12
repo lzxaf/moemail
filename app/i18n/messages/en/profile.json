@@ -145,6 +145,8 @@
     "deleteConfirmButton": "Delete",
     "cancel": "Cancel",
     "deleteSuccess": "User deleted successfully",
-    "deleteFailed": "Failed to delete user"
+    "deleteFailed": "Failed to delete user",
+    "viewMailbox": "Open user mailbox",
+    "viewMailboxFor": "Open {name}'s mailbox"
   }
 }

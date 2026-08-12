@@ -13,7 +13,9 @@
     "messageContent": "Message Content",
     "selectMessage": "Select a message to view details",
     "backToEmailList": "← Back to Email List",
-    "backToMessageList": "← Back to Message List"
+    "backToMessageList": "← Back to Message List",
+    "managedMailbox": "Managing {name}'s mailbox",
+    "exitManagedMailbox": "Exit"
   },
   "list": {
     "emailCount": "{count}/{max} emails",

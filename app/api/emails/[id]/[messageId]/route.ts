@@ -3,6 +3,7 @@ import { createDb } from "@/lib/db"
 import { messages, emails } from "@/lib/schema"
 import { and, eq } from "drizzle-orm"
 import { getUserId } from "@/lib/apiKey"
+import { checkMailboxAccess } from "@/lib/auth"
 export const runtime = "edge"
 
 export async function DELETE(
@@ -59,16 +60,11 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   try {
     const { id, messageId } = await params
     const db = createDb()
-    const userId = await getUserId()
-
     const email = await db.query.emails.findFirst({
-      where: and(
-        eq(emails.id, id),
-        eq(emails.userId, userId!)
-      )
+      where: eq(emails.id, id)
     })
 
-    if (!email) {
+    if (!email || !await checkMailboxAccess(email.userId)) {
       return NextResponse.json(
         { error: "无权限查看" },
         { status: 403 }
@@ -81,15 +77,15 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         eq(messages.emailId, id)
       )
     })
-    
+
     if (!message) {
       return NextResponse.json(
         { error: "Message not found" },
         { status: 404 }
       )
     }
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       message: {
         id: message.id,
         from_address: message.fromAddress,
@@ -109,4 +105,4 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       { status: 500 }
     )
   }
-} 
+}

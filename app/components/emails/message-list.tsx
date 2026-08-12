@@ -40,6 +40,7 @@ interface MessageListProps {
   onMessageSelect: (messageId: string | null, messageType?: 'received' | 'sent') => void
   selectedMessageId?: string | null
   refreshTrigger?: number
+  managed?: boolean
 }
 
 interface MessageResponse {
@@ -48,7 +49,7 @@ interface MessageResponse {
   total: number
 }
 
-export function MessageList({ email, messageType, onMessageSelect, selectedMessageId, refreshTrigger }: MessageListProps) {
+export function MessageList({ email, messageType, onMessageSelect, selectedMessageId, refreshTrigger, managed }: MessageListProps) {
   const t = useTranslations("emails.messages")
   const tList = useTranslations("emails.list")
   const tCommon = useTranslations("common.actions")
@@ -79,7 +80,7 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
       }
       const response = await fetch(url)
       const data = await response.json() as MessageResponse
-      
+
       if (!cursor) {
         const newMessages = data.messages
         const oldMessages = messagesRef.current
@@ -190,10 +191,10 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
     setLoading(true)
     setNextCursor(null)
     fetchMessages()
-    startPolling() 
+    startPolling()
 
     return () => {
-      stopPolling() 
+      stopPolling()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email.id])
@@ -252,7 +253,7 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
                       </span>
                     </div>
                   </div>
-                  <div className="opacity-0 group-hover:opacity-100 flex gap-1" onClick={(e) => e.stopPropagation()}>
+                  {!managed && <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 flex gap-1" onClick={(e) => e.stopPropagation()}>
                     <ShareMessageDialog
                       emailId={email.id}
                       messageId={message.id}
@@ -278,7 +279,7 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
                     >
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
-                  </div>
+                  </div>}
                 </div>
               </div>
             ))}
@@ -316,4 +317,4 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
     </AlertDialog>
   </>
   )
-} 
+}

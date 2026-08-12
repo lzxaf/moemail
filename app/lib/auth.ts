@@ -6,7 +6,7 @@ import { createDb, Db } from "./db"
 import { accounts, users, roles, userRoles } from "./schema"
 import { eq } from "drizzle-orm"
 import { getRequestContext } from "@cloudflare/next-on-pages"
-import { Permission, hasPermission, ROLES, Role } from "./permissions"
+import { Permission, hasPermission, PERMISSIONS, ROLES, Role } from "./permissions"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { hashPassword, comparePassword } from "@/lib/utils"
 import { authSchema, AuthSchema } from "@/lib/validation"
@@ -86,6 +86,15 @@ export async function checkPermission(permission: Permission) {
 
   const userRoleNames = userRoleRecords.map(ur => ur.role.name)
   return hasPermission(userRoleNames as Role[], permission)
+}
+
+export async function checkMailboxAccess(ownerId: string | null) {
+  const userId = await getUserId()
+
+  if (!userId || !ownerId) return false
+  if (userId === ownerId) return true
+
+  return checkPermission(PERMISSIONS.MANAGE_USERS_MAILBOX)
 }
 
 export const {

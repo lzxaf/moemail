@@ -25,11 +25,12 @@ interface MessageViewProps {
   messageId: string
   messageType?: 'received' | 'sent'
   onClose: () => void
+  managed?: boolean
 }
 
 type ViewMode = "html" | "text"
 
-export function MessageView({ emailId, messageId, messageType = 'received' }: MessageViewProps) {
+export function MessageView({ emailId, messageId, messageType = 'received', managed }: MessageViewProps) {
   const t = useTranslations("emails.messageView")
   const tList = useTranslations("emails.list")
   const [message, setMessage] = useState<Message | null>(null)
@@ -45,11 +46,11 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
       try {
         setLoading(true)
         setError(null)
-        
+
         const url = `/api/emails/${emailId}/${messageId}${messageType === 'sent' ? '?type=sent' : ''}`;
-        
+
         const response = await fetch(url)
-        
+
         if (!response.ok) {
           const errorData = await response.json()
           const errorMessage = (errorData as { error?: string }).error || t("loadError")
@@ -61,7 +62,7 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
           })
           return
         }
-        
+
         const data = await response.json() as { message: Message }
         setMessage(data.message)
         if (!data.message.html) {
@@ -71,7 +72,7 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
         const errorMessage = t("networkError")
         setError(errorMessage)
         toast({
-          title: tList("error"), 
+          title: tList("error"),
           description: errorMessage,
           variant: "destructive"
         })
@@ -195,8 +196,8 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
     return (
       <div className="flex flex-col items-center justify-center h-32 text-center">
         <p className="text-sm text-destructive mb-2">{error}</p>
-        <button 
-          onClick={() => window.location.reload()} 
+        <button
+          onClick={() => window.location.reload()}
           className="text-xs text-primary hover:underline"
         >
           {t("retry")}
@@ -212,16 +213,16 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
       <div className="p-4 space-y-3 border-b border-primary/20">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-base font-bold flex-1">{message.subject}</h3>
-          <ShareMessageDialog 
+          {!managed && <ShareMessageDialog
             emailId={emailId}
-            messageId={message.id} 
+            messageId={message.id}
             messageSubject={message.subject}
             trigger={
               <button className="p-1.5 hover:bg-primary/10 rounded-md transition-colors">
                 <Share2 className="h-4 w-4 text-gray-500" />
               </button>
             }
-          />
+          />}
         </div>
         <div className="text-xs text-gray-500 space-y-1">
           {message.from_address && (
@@ -233,7 +234,7 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
           <p>{t("time")}: {new Date(message.sent_at || message.received_at || 0).toLocaleString()}</p>
         </div>
       </div>
-      
+
       {message.html && message.content && (
         <div className="border-b border-primary/20 p-2">
           <RadioGroup
@@ -243,8 +244,8 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="html" id="html" />
-              <Label 
-                htmlFor="html" 
+              <Label
+                htmlFor="html"
                 className="text-xs cursor-pointer"
               >
                 {t("htmlFormat")}
@@ -252,8 +253,8 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="text" id="text" />
-              <Label 
-                htmlFor="text" 
+              <Label
+                htmlFor="text"
                 className="text-xs cursor-pointer"
               >
                 {t("textFormat")}
@@ -262,7 +263,7 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
           </RadioGroup>
         </div>
       )}
-      
+
       <div className="flex-1 overflow-auto relative">
         {viewMode === "html" && message.html ? (
           <iframe
@@ -278,4 +279,4 @@ export function MessageView({ emailId, messageId, messageType = 'received' }: Me
       </div>
     </div>
   )
-} 
+}

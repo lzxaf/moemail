@@ -13,7 +13,9 @@
     "messageContent": "邮件内容",
     "selectMessage": "选择邮件查看详情",
     "backToEmailList": "← 返回邮箱列表",
-    "backToMessageList": "← 返回消息列表"
+    "backToMessageList": "← 返回消息列表",
+    "managedMailbox": "正在管理 {name} 的邮箱",
+    "exitManagedMailbox": "退出管理"
   },
   "list": {
     "emailCount": "{count}/{max} 个邮箱",

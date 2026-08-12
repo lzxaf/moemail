@@ -145,6 +145,8 @@
     "deleteConfirmButton": "删除",
     "cancel": "取消",
     "deleteSuccess": "用户删除成功",
-    "deleteFailed": "删除用户失败"
+    "deleteFailed": "删除用户失败",
+    "viewMailbox": "进入用户邮箱",
+    "viewMailboxFor": "进入 {name} 的邮箱"
   }
 }

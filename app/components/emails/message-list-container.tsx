@@ -15,9 +15,10 @@ interface MessageListContainerProps {
   onMessageSelect: (messageId: string | null, messageType?: 'received' | 'sent') => void
   selectedMessageId?: string | null
   refreshTrigger?: number
+  managed?: boolean
 }
 
-export function MessageListContainer({ email, onMessageSelect, selectedMessageId, refreshTrigger }: MessageListContainerProps) {
+export function MessageListContainer({ email, onMessageSelect, selectedMessageId, refreshTrigger, managed }: MessageListContainerProps) {
   const t = useTranslations("emails.messages")
   const [activeTab, setActiveTab] = useState<'received' | 'sent'>('received')
   const { canSend: canSendEmails } = useSendPermission()
@@ -29,7 +30,7 @@ export function MessageListContainer({ email, onMessageSelect, selectedMessageId
 
   return (
     <div className="h-full flex flex-col">
-      {canSendEmails ? (
+      {canSendEmails && !managed ? (
         <Tabs value={activeTab} onValueChange={handleTabChange} className="h-full flex flex-col">
           <div className="p-2 border-b border-primary/20">
             <SlidingTabsList>
@@ -43,7 +44,7 @@ export function MessageListContainer({ email, onMessageSelect, selectedMessageId
               </SlidingTabsTrigger>
             </SlidingTabsList>
           </div>
-          
+
           <TabsContent value="received" className="flex-1 overflow-hidden m-0">
             <MessageList
               email={email}
@@ -52,7 +53,7 @@ export function MessageListContainer({ email, onMessageSelect, selectedMessageId
               selectedMessageId={selectedMessageId}
             />
           </TabsContent>
-          
+
           <TabsContent value="sent" className="flex-1 overflow-hidden m-0">
             <MessageList
               email={email}
@@ -70,9 +71,10 @@ export function MessageListContainer({ email, onMessageSelect, selectedMessageId
             messageType="received"
             onMessageSelect={onMessageSelect}
             selectedMessageId={selectedMessageId}
+            managed={managed}
           />
         </div>
       )}
     </div>
   )
-} 
+}
