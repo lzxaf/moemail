@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   const cursor = searchParams.get('cursor')
   const userId = searchParams.get('userId') || currentUserId
 
-  if (!await checkMailboxAccess(userId)) {
+  if (!await checkMailboxAccess(currentUserId, userId)) {
     return NextResponse.json({ error: "无权限查看" }, { status: 403 })
   }
 

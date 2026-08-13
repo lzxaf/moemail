@@ -73,11 +73,7 @@ export async function getUserRole(userId: string) {
   return userRoleRecords[0].role.name
 }
 
-export async function checkPermission(permission: Permission) {
-  const userId = await getUserId()
-
-  if (!userId) return false
-
+async function userHasPermission(userId: string, permission: Permission) {
   const db = createDb()
   const userRoleRecords = await db.query.userRoles.findMany({
     where: eq(userRoles.userId, userId),
@@ -88,13 +84,20 @@ export async function checkPermission(permission: Permission) {
   return hasPermission(userRoleNames as Role[], permission)
 }
 
-export async function checkMailboxAccess(ownerId: string | null | undefined) {
+export async function checkPermission(permission: Permission) {
   const userId = await getUserId()
 
+  return userId ? userHasPermission(userId, permission) : false
+}
+
+export async function checkMailboxAccess(
+  userId: string | undefined,
+  ownerId: string | null | undefined
+) {
   if (!userId || !ownerId) return false
   if (userId === ownerId) return true
 
-  return checkPermission(PERMISSIONS.MANAGE_USERS_MAILBOX)
+  return userHasPermission(userId, PERMISSIONS.MANAGE_USERS_MAILBOX)
 }
 
 export const {

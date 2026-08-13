@@ -47,6 +47,7 @@ interface MessageResponse {
   messages: Message[]
   nextCursor: string | null
   total: number
+  error?: string
 }
 
 export function MessageList({ email, messageType, onMessageSelect, selectedMessageId, refreshTrigger, managed }: MessageListProps) {
@@ -80,6 +81,10 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
       }
       const response = await fetch(url)
       const data = await response.json() as MessageResponse
+
+      if (!response.ok) {
+        throw new Error(data.error || tList("error"))
+      }
 
       if (!cursor) {
         const newMessages = data.messages

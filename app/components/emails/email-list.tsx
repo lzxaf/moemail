@@ -42,6 +42,7 @@ interface EmailResponse {
   emails: Email[]
   nextCursor: string | null
   total: number
+  error?: string
 }
 
 export function EmailList({ onEmailSelect, selectedEmailId, managedUserId }: EmailListProps) {
@@ -71,6 +72,10 @@ export function EmailList({ onEmailSelect, selectedEmailId, managedUserId }: Ema
       const response = await fetch(url)
       const data = await response.json() as EmailResponse
 
+      if (!response.ok) {
+        throw new Error(data.error || t("error"))
+      }
+
       if (!cursor) {
         const newEmails = data.emails
         const oldEmails = emails
@@ -95,6 +100,11 @@ export function EmailList({ onEmailSelect, selectedEmailId, managedUserId }: Ema
       setTotal(data.total)
     } catch (error) {
       console.error("Failed to fetch emails:", error)
+      toast({
+        title: t("error"),
+        description: error instanceof Error ? error.message : t("error"),
+        variant: "destructive"
+      })
     } finally {
       setLoading(false)
       setRefreshing(false)

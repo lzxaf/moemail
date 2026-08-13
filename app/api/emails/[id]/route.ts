@@ -13,6 +13,8 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const userId = await getUserId()
+
   try {
     const db = createDb()
     const { id } = await params
@@ -20,7 +22,7 @@ export async function DELETE(
       where: eq(emails.id, id)
     })
 
-    if (!email || !await checkMailboxAccess(email.userId)) {
+    if (!email || !await checkMailboxAccess(userId, email.userId)) {
       return NextResponse.json(
         { error: "邮箱不存在或无权限删除" },
         { status: 403 }
@@ -71,7 +73,7 @@ export async function GET(
       where: eq(emails.id, id)
     })
 
-    if (!email || !await checkMailboxAccess(email.userId)) {
+    if (!email || !await checkMailboxAccess(userId, email.userId)) {
       return NextResponse.json(
         { error: "无权限查看" },
         { status: 403 }

@@ -60,11 +60,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   try {
     const { id, messageId } = await params
     const db = createDb()
+    const userId = await getUserId()
     const email = await db.query.emails.findFirst({
       where: eq(emails.id, id)
     })
 
-    if (!email || !await checkMailboxAccess(email.userId)) {
+    if (!email || !await checkMailboxAccess(userId, email.userId)) {
       return NextResponse.json(
         { error: "无权限查看" },
         { status: 403 }
