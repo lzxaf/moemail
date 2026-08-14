@@ -11,6 +11,22 @@
       "CIVILIAN": "平民"
     }
   },
+  "password": {
+    "title": "修改密碼",
+    "description": "驗證目前密碼後設定新的登入密碼",
+    "currentPassword": "目前密碼",
+    "newPassword": "新密碼",
+    "confirmPassword": "確認新密碼",
+    "update": "更新密碼",
+    "updating": "正在更新...",
+    "updateSuccess": "密碼修改成功",
+    "updateFailed": "密碼修改失敗",
+    "currentPasswordIncorrect": "目前密碼錯誤",
+    "passwordMismatch": "兩次輸入的新密碼不一致",
+    "passwordTooShort": "新密碼至少需要 8 個字元",
+    "invalidPassword": "密碼格式不正確",
+    "passwordUnavailable": "此帳號無法使用密碼登入"
+  },
   "apiKey": {
     "title": "API Key 管理",
     "description": "建立與管理用於存取 OpenAPI 的 API 金鑰",
@@ -169,6 +185,12 @@
     "deleteSuccess": "使用者刪除成功",
     "deleteFailed": "刪除使用者失敗",
     "viewMailbox": "進入使用者郵箱",
-    "viewMailboxFor": "進入 {name} 的郵箱"
+    "viewMailboxFor": "進入 {name} 的郵箱",
+    "resetPassword": "重設密碼",
+    "resetPasswordFor": "重設 {name} 的密碼",
+    "resetPasswordDescription": "為 {name} 設定新的登入密碼",
+    "resetPasswordSuccess": "使用者密碼已重設",
+    "resetPasswordFailed": "重設使用者密碼失敗",
+    "resetPasswordUnavailable": "此帳號沒有可用的使用者名稱"
   }
 }

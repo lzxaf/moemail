@@ -11,6 +11,22 @@
       "CIVILIAN": "Civilian"
     }
   },
+  "password": {
+    "title": "Change Password",
+    "description": "Verify your current password, then set a new login password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "update": "Update Password",
+    "updating": "Updating...",
+    "updateSuccess": "Password changed successfully",
+    "updateFailed": "Failed to change password",
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "passwordMismatch": "The new passwords do not match",
+    "passwordTooShort": "The new password must be at least 8 characters",
+    "invalidPassword": "Invalid password format",
+    "passwordUnavailable": "This account cannot sign in with a password"
+  },
   "apiKey": {
     "title": "API Key Management",
     "description": "Create and manage API keys for accessing OpenAPI",
@@ -169,6 +185,12 @@
     "deleteSuccess": "User deleted successfully",
     "deleteFailed": "Failed to delete user",
     "viewMailbox": "Open user mailbox",
-    "viewMailboxFor": "Open {name}'s mailbox"
+    "viewMailboxFor": "Open {name}'s mailbox",
+    "resetPassword": "Reset Password",
+    "resetPasswordFor": "Reset {name}'s password",
+    "resetPasswordDescription": "Set a new login password for {name}",
+    "resetPasswordSuccess": "User password reset successfully",
+    "resetPasswordFailed": "Failed to reset user password",
+    "resetPasswordUnavailable": "This account does not have a username"
   }
 }

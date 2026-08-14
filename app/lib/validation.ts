@@ -12,3 +12,14 @@ export const authSchema = z.object({
 })
 
 export type AuthSchema = z.infer<typeof authSchema>
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: authSchema.shape.password,
+})
+
+export type ChangePasswordSchema = z.infer<typeof changePasswordSchema>
+
+export const resetPasswordSchema = changePasswordSchema.pick({
+  newPassword: true,
+})

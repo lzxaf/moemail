@@ -9,6 +9,7 @@ import { useLocale } from "next-intl"
 import Link from "next/link"
 import { useToast } from "@/components/ui/use-toast"
 import { ROLES, Role } from "@/lib/permissions"
+import { ResetPasswordButton } from "./reset-password-button"
 import {
   Select,
   SelectContent,
@@ -289,6 +290,12 @@ export function PromotePanel() {
                           <Mail className="w-4 h-4" />
                         </Link>
                       </Button>
+                      {user.username && (
+                        <ResetPasswordButton
+                          userId={user.id}
+                          userName={user.name || user.username}
+                        />
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"

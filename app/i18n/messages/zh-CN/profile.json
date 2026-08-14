@@ -11,6 +11,22 @@
       "CIVILIAN": "平民"
     }
   },
+  "password": {
+    "title": "修改密码",
+    "description": "验证当前密码后设置新的登录密码",
+    "currentPassword": "当前密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认新密码",
+    "update": "更新密码",
+    "updating": "正在更新...",
+    "updateSuccess": "密码修改成功",
+    "updateFailed": "密码修改失败",
+    "currentPasswordIncorrect": "当前密码错误",
+    "passwordMismatch": "两次输入的新密码不一致",
+    "passwordTooShort": "新密码至少需要 8 个字符",
+    "invalidPassword": "密码格式不正确",
+    "passwordUnavailable": "此账号无法使用密码登录"
+  },
   "apiKey": {
     "title": "API Key 管理",
     "description": "创建和管理用于访问 OpenAPI 的 API 密钥",
@@ -169,6 +185,12 @@
     "deleteSuccess": "用户删除成功",
     "deleteFailed": "删除用户失败",
     "viewMailbox": "进入用户邮箱",
-    "viewMailboxFor": "进入 {name} 的邮箱"
+    "viewMailboxFor": "进入 {name} 的邮箱",
+    "resetPassword": "重置密码",
+    "resetPasswordFor": "重置 {name} 的密码",
+    "resetPasswordDescription": "为 {name} 设置新的登录密码",
+    "resetPasswordSuccess": "用户密码已重置",
+    "resetPasswordFailed": "重置用户密码失败",
+    "resetPasswordUnavailable": "该账号没有可用的用户名"
   }
 }

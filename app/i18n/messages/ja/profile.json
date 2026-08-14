@@ -11,6 +11,22 @@
       "CIVILIAN": "市民"
     }
   },
+  "password": {
+    "title": "パスワードを変更",
+    "description": "現在のパスワードを確認して、新しいログインパスワードを設定します",
+    "currentPassword": "現在のパスワード",
+    "newPassword": "新しいパスワード",
+    "confirmPassword": "新しいパスワードを確認",
+    "update": "パスワードを更新",
+    "updating": "更新中...",
+    "updateSuccess": "パスワードを変更しました",
+    "updateFailed": "パスワードの変更に失敗しました",
+    "currentPasswordIncorrect": "現在のパスワードが正しくありません",
+    "passwordMismatch": "新しいパスワードが一致しません",
+    "passwordTooShort": "新しいパスワードは8文字以上必要です",
+    "invalidPassword": "パスワードの形式が正しくありません",
+    "passwordUnavailable": "このアカウントはパスワードでログインできません"
+  },
   "apiKey": {
     "title": "API Key 管理",
     "description": "OpenAPI にアクセスするための API キーを作成・管理します",
@@ -169,6 +185,12 @@
     "deleteSuccess": "ユーザーを削除しました",
     "deleteFailed": "ユーザーの削除に失敗しました",
     "viewMailbox": "ユーザーのメールボックスを開く",
-    "viewMailboxFor": "{name} のメールボックスを開く"
+    "viewMailboxFor": "{name} のメールボックスを開く",
+    "resetPassword": "パスワードをリセット",
+    "resetPasswordFor": "{name} のパスワードをリセット",
+    "resetPasswordDescription": "{name} の新しいログインパスワードを設定します",
+    "resetPasswordSuccess": "ユーザーのパスワードをリセットしました",
+    "resetPasswordFailed": "ユーザーのパスワードのリセットに失敗しました",
+    "resetPasswordUnavailable": "このアカウントにはユーザー名がありません"
   }
 }

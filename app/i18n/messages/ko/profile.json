@@ -11,6 +11,22 @@
       "CIVILIAN": "평민"
     }
   },
+  "password": {
+    "title": "비밀번호 변경",
+    "description": "현재 비밀번호를 확인한 후 새 로그인 비밀번호를 설정합니다",
+    "currentPassword": "현재 비밀번호",
+    "newPassword": "새 비밀번호",
+    "confirmPassword": "새 비밀번호 확인",
+    "update": "비밀번호 업데이트",
+    "updating": "업데이트 중...",
+    "updateSuccess": "비밀번호가 변경되었습니다",
+    "updateFailed": "비밀번호 변경에 실패했습니다",
+    "currentPasswordIncorrect": "현재 비밀번호가 올바르지 않습니다",
+    "passwordMismatch": "새 비밀번호가 일치하지 않습니다",
+    "passwordTooShort": "새 비밀번호는 8자 이상이어야 합니다",
+    "invalidPassword": "비밀번호 형식이 올바르지 않습니다",
+    "passwordUnavailable": "이 계정은 비밀번호로 로그인할 수 없습니다"
+  },
   "apiKey": {
     "title": "API Key 관리",
     "description": "OpenAPI 접근을 위한 API 키 생성 및 관리",
@@ -169,6 +185,12 @@
     "deleteSuccess": "사용자가 삭제되었습니다",
     "deleteFailed": "사용자 삭제에 실패했습니다",
     "viewMailbox": "사용자 메일함 열기",
-    "viewMailboxFor": "{name}의 메일함 열기"
+    "viewMailboxFor": "{name}의 메일함 열기",
+    "resetPassword": "비밀번호 재설정",
+    "resetPasswordFor": "{name}의 비밀번호 재설정",
+    "resetPasswordDescription": "{name}의 새 로그인 비밀번호를 설정합니다",
+    "resetPasswordSuccess": "사용자 비밀번호가 재설정되었습니다",
+    "resetPasswordFailed": "사용자 비밀번호 재설정에 실패했습니다",
+    "resetPasswordUnavailable": "이 계정에는 사용자 이름이 없습니다"
   }
 }

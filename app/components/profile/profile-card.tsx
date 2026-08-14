@@ -15,6 +15,7 @@ import { PERMISSIONS } from "@/lib/permissions"
 import { WebsiteConfigPanel } from "./website-config-panel"
 import { ApiKeyPanel } from "./api-key-panel"
 import { MailboxPanel } from "./mailbox-panel"
+import { PasswordPanel } from "./password-panel"
 
 interface ProfileCardProps {
   user: User
@@ -135,6 +136,8 @@ export function ProfileCard({ user }: ProfileCardProps) {
           </div>
         </div>
       </div>
+
+      {user.username && <PasswordPanel />}
 
       {canManageWebhook && (
         <div className="bg-background rounded-lg border-2 border-primary/20 p-6">
