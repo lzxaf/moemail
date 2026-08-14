@@ -17,3 +17,11 @@ export async function comparePassword(password: string, hashedPassword: string):
   const hash = await hashPassword(password)
   return hash === hashedPassword
 }
+
+export async function getPasswordVersion(hashedPassword: string): Promise<string> {
+  return hashPassword(hashedPassword)
+}
+
+export function isPasswordVersionValid(tokenVersion: unknown, currentVersion: string): boolean {
+  return typeof tokenVersion === "string" && tokenVersion === currentVersion
+}

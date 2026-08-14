@@ -23,10 +23,19 @@ declare module "next-auth" {
     roles?: { name: string }[]
     username?: string | null
     providers?: string[]
+    passwordVersion?: string
   }
 
   interface Session {
     user: User
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id?: string
+    username?: string | null
+    passwordVersion?: string
   }
 }
 

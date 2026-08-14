@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
+import { signOut } from "next-auth/react"
 import { KeyRound, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast"
 
 export function PasswordPanel() {
   const t = useTranslations("profile.password")
+  const locale = useLocale()
   const { toast } = useToast()
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
@@ -52,6 +54,7 @@ export function PasswordPanel() {
       setNewPassword("")
       setConfirmPassword("")
       toast({ title: t("updateSuccess") })
+      void signOut({ callbackUrl: `/${locale}` })
     } catch (error) {
       toast({
         title: t("updateFailed"),

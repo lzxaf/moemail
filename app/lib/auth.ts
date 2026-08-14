@@ -8,7 +8,12 @@ import { eq } from "drizzle-orm"
 import { getRequestContext } from "@cloudflare/next-on-pages"
 import { Permission, hasPermission, PERMISSIONS, ROLES, Role } from "./permissions"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { hashPassword, comparePassword } from "@/lib/utils"
+import {
+  hashPassword,
+  comparePassword,
+  getPasswordVersion,
+  isPasswordVersionValid,
+} from "@/lib/utils"
 import { authSchema, AuthSchema } from "@/lib/validation"
 import { generateAvatarUrl } from "./avatar"
 import { getUserId } from "./apiKey"
@@ -169,6 +174,7 @@ export const {
         return {
           ...user,
           password: undefined,
+          passwordVersion: await getPasswordVersion(user.password as string),
         }
       },
     }),
@@ -200,6 +206,24 @@ export const {
         token.name = user.name || user.username
         token.username = user.username
         token.image = user.image || generateAvatarUrl(token.name as string)
+        token.passwordVersion = user.passwordVersion
+      }
+
+      if (token.username) {
+        // Tokens created before password-version tracking are expired once on deployment.
+        if (!token.passwordVersion) return null
+
+        const db = createDb()
+        const currentUser = await db.query.users.findFirst({
+          where: eq(users.id, token.id as string),
+          columns: { password: true },
+        })
+        if (!currentUser?.password) return null
+
+        const currentVersion = await getPasswordVersion(currentUser.password)
+        if (!isPasswordVersionValid(token.passwordVersion, currentVersion)) {
+          return null
+        }
       }
       return token
     },
