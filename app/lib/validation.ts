@@ -23,3 +23,23 @@ export type ChangePasswordSchema = z.infer<typeof changePasswordSchema>
 export const resetPasswordSchema = changePasswordSchema.pick({
   newPassword: true,
 })
+
+export const adminMailboxRegistrationSchema = z.object({
+  address: z.string()
+    .trim()
+    .max(254)
+    .email()
+    .transform((value) => value.toLowerCase()),
+})
+
+export function getConfiguredEmailDomains(domainConfig?: string | null) {
+  return (domainConfig || "moemail.app")
+    .split(",")
+    .map((domain) => domain.trim().toLowerCase())
+    .filter(Boolean)
+}
+
+export function isConfiguredEmailDomain(address: string, domainConfig?: string | null) {
+  const domain = address.slice(address.lastIndexOf("@") + 1).toLowerCase()
+  return getConfiguredEmailDomains(domainConfig).includes(domain)
+}

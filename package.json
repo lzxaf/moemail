@@ -15,6 +15,7 @@
     "dev:cleanup": "wrangler dev --config wrangler.cleanup.json --test-scheduled",
     "test:cleanup": "curl http://localhost:8787/__scheduled",
     "test:password": "tsx --test scripts/change-password.test.ts",
+    "test:admin-mailbox": "tsx --test scripts/admin-mailbox.test.ts",
     "deploy:email": "wrangler deploy --config wrangler.email.json",
     "deploy:cleanup": "wrangler deploy --config wrangler.cleanup.json",
     "deploy:pages": "npm run build:pages && wrangler pages deploy .vercel/output/static --branch main"

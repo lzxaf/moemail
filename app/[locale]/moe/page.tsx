@@ -7,8 +7,8 @@ import { checkPermission } from "@/lib/auth"
 import { PERMISSIONS } from "@/lib/permissions"
 import type { Locale } from "@/i18n/config"
 import { createDb } from "@/lib/db"
-import { users } from "@/lib/schema"
-import { eq } from "drizzle-orm"
+import { emails, users } from "@/lib/schema"
+import { and, eq } from "drizzle-orm"
 
 export const runtime = "edge"
 
@@ -17,10 +17,10 @@ export default async function MoePage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ userId?: string }>
+  searchParams: Promise<{ userId?: string; emailId?: string }>
 }) {
   const { locale: localeFromParams } = await params
-  const { userId } = await searchParams
+  const { userId, emailId } = await searchParams
   const locale = localeFromParams as Locale
   const session = await auth()
 
@@ -43,12 +43,23 @@ export default async function MoePage({
     redirect(`/${locale}/profile`)
   }
 
+  const mailboxOwnerId = managedUser?.id || session.user.id!
+  const initialEmail = emailId
+    ? await createDb().query.emails.findFirst({
+        where: and(eq(emails.id, emailId), eq(emails.userId, mailboxOwnerId)),
+        columns: { id: true, address: true },
+      })
+    : undefined
+
   return (
     <div className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 h-screen">
       <div className="container mx-auto h-full px-4 lg:px-8 max-w-[1600px]">
         <Header />
         <main className="h-full">
-          <ThreeColumnLayout managedUser={managedUser || undefined} />
+          <ThreeColumnLayout
+            managedUser={managedUser || undefined}
+            initialEmail={initialEmail}
+          />
           {!hasPermission && <NoPermissionDialog />}
         </main>
       </div>

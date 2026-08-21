@@ -26,10 +26,16 @@ interface ManagedUser {
   email: string | null
 }
 
-export function ThreeColumnLayout({ managedUser }: { managedUser?: ManagedUser }) {
+export function ThreeColumnLayout({
+  managedUser,
+  initialEmail,
+}: {
+  managedUser?: ManagedUser
+  initialEmail?: Email
+}) {
   const t = useTranslations("emails.layout")
   const locale = useLocale()
-  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null)
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(initialEmail || null)
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null)
   const [selectedMessageType, setSelectedMessageType] = useState<'received' | 'sent'>('received')
   const [refreshTrigger, setRefreshTrigger] = useState(0)

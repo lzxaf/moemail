@@ -1,11 +1,14 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { useTranslations } from "next-intl"
-import { ChevronLeft, ChevronRight, Loader2, Mail, Search, Trash2, User2 } from "lucide-react"
+import { useLocale, useTranslations } from "next-intl"
+import { ChevronLeft, ChevronRight, ExternalLink, Loader2, Mail, Search, Trash2, User2 } from "lucide-react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
+import { useConfig } from "@/hooks/use-config"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,12 +34,17 @@ const PAGE_SIZE = 10
 
 export function MailboxPanel() {
   const t = useTranslations("profile.mailbox")
+  const locale = useLocale()
+  const { config } = useConfig()
   const [mailboxes, setMailboxes] = useState<MailboxItem[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState("")
   const [query, setQuery] = useState("")
   const [loading, setLoading] = useState(true)
+  const [newAddress, setNewAddress] = useState("")
+  const [registering, setRegistering] = useState(false)
+  const [registrationError, setRegistrationError] = useState("")
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [mailboxToDelete, setMailboxToDelete] = useState<MailboxItem | null>(null)
   const { toast } = useToast()
@@ -78,6 +86,43 @@ export function MailboxPanel() {
     fetchMailboxes()
   }, [fetchMailboxes])
 
+  const handleRegister = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setRegistering(true)
+    setRegistrationError("")
+
+    try {
+      const response = await fetch("/api/admin/mailboxes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: newAddress }),
+      })
+      const data = await response.json() as {
+        mailbox?: { address: string }
+        created?: boolean
+        code?: string
+      }
+
+      if (!response.ok || !data.mailbox) {
+        const message = data.code === "INVALID_DOMAIN"
+          ? t("invalidDomain")
+          : data.code === "INVALID_ADDRESS"
+            ? t("invalidAddress")
+            : t("registerFailed")
+        setRegistrationError(message)
+        return
+      }
+
+      setNewAddress("")
+      setSearch(data.mailbox.address)
+      toast({ title: data.created ? t("registerSuccess") : t("existingSuccess") })
+    } catch {
+      setRegistrationError(t("registerFailed"))
+    } finally {
+      setRegistering(false)
+    }
+  }
+
   const handleDelete = async (mailbox: MailboxItem) => {
     setDeletingId(mailbox.id)
     try {
@@ -113,6 +158,45 @@ export function MailboxPanel() {
         </span>
       </div>
 
+      <form onSubmit={handleRegister} className="mb-6 space-y-3 rounded-lg border bg-muted/30 p-4">
+        <div className="space-y-1">
+          <Label htmlFor="admin-mailbox-address">{t("registerTitle")}</Label>
+          <p id="admin-mailbox-hint" className="text-xs text-muted-foreground">
+            {t("registerDescription")}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {t("allowedDomains", {
+              domains: config?.emailDomainsArray.map((domain) => domain.trim()).filter(Boolean).join(", ") || "—",
+            })}
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Input
+            id="admin-mailbox-address"
+            type="email"
+            value={newAddress}
+            onChange={(event) => {
+              setNewAddress(event.target.value)
+              setRegistrationError("")
+            }}
+            placeholder={t("addressPlaceholder")}
+            aria-describedby="admin-mailbox-hint admin-mailbox-error"
+            disabled={registering}
+            className="flex-1"
+            required
+          />
+          <Button type="submit" disabled={registering || !newAddress.trim()} className="w-full sm:w-auto">
+            {registering && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {registering ? t("registering") : t("startReceiving")}
+          </Button>
+        </div>
+        {registrationError && (
+          <p id="admin-mailbox-error" className="text-xs font-medium text-destructive" role="alert">
+            {registrationError}
+          </p>
+        )}
+      </form>
+
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
@@ -136,7 +220,14 @@ export function MailboxPanel() {
           {mailboxes.map((mailbox) => (
             <div key={mailbox.id} className="flex items-start gap-3 p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
               <div className="min-w-0 flex-1 space-y-1">
-                <div className="font-medium text-sm break-all">{mailbox.address}</div>
+                <Link
+                  href={`/${locale}/moe?userId=${mailbox.ownerId}&emailId=${mailbox.id}`}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                  aria-label={t("viewAddress", { address: mailbox.address })}
+                >
+                  <span className="break-all">{mailbox.address}</span>
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                </Link>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">
                   <User2 className="w-3.5 h-3.5 shrink-0" />
                   <span className="truncate">{t("owner", { name: ownerLabel(mailbox) })}</span>
