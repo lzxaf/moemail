@@ -1,10 +1,13 @@
 import { createDb } from "@/lib/db"
-import { and, eq, gt, lt, or, sql } from "drizzle-orm"
+import { and, eq, gt, inArray, lt, or, sql } from "drizzle-orm"
 import { NextResponse } from "next/server"
 import { emails } from "@/lib/schema"
 import { encodeCursor, decodeCursor } from "@/lib/cursor"
 import { getUserId } from "@/lib/apiKey"
-import { checkMailboxAccess } from "@/lib/auth"
+import { checkMailboxAccess, checkPermission } from "@/lib/auth"
+import { PERMISSIONS } from "@/lib/permissions"
+import { getRequestContext } from "@cloudflare/next-on-pages"
+import { getReceivedMailboxIds } from "@/lib/emperor-mailboxes"
 
 export const runtime = "edge"
 
@@ -15,7 +18,8 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url)
   const cursor = searchParams.get('cursor')
-  const userId = searchParams.get('userId') || currentUserId
+  const requestedUserId = searchParams.get('userId')
+  const userId = requestedUserId || currentUserId
 
   if (!await checkMailboxAccess(currentUserId, userId)) {
     return NextResponse.json({ error: "无权限查看" }, { status: 403 })
@@ -24,8 +28,15 @@ export async function GET(request: Request) {
   const db = createDb()
 
   try {
+    const receivedMailboxIds = !requestedUserId && await checkPermission(PERMISSIONS.MANAGE_USERS_MAILBOX)
+      ? await getReceivedMailboxIds(getRequestContext().env.SITE_CONFIG)
+      : []
+    const receivedMailboxIdSet = new Set(receivedMailboxIds)
+    const ownerCondition = receivedMailboxIds.length > 0
+      ? or(eq(emails.userId, userId!), inArray(emails.id, receivedMailboxIds))
+      : eq(emails.userId, userId!)
     const baseConditions = and(
-      eq(emails.userId, userId!),
+      ownerCondition,
       gt(emails.expiresAt, new Date())
     )
 
@@ -68,7 +79,10 @@ export async function GET(request: Request) {
     const emailList = hasMore ? results.slice(0, PAGE_SIZE) : results
 
     return NextResponse.json({
-      emails: emailList,
+      emails: emailList.map((email) => ({
+        ...email,
+        subscribed: email.userId !== currentUserId && receivedMailboxIdSet.has(email.id),
+      })),
       nextCursor,
       total: totalCount
     })

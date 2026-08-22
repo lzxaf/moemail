@@ -29,6 +29,12 @@
     "deleteDescription": "确定要删除邮箱 {email} 吗？此操作将同时删除该邮箱中的所有邮件，且不可恢复。",
     "deleteSuccess": "邮箱已删除",
     "deleteFailed": "删除邮箱失败",
+    "receiving": "皇帝接收",
+    "stopReceiving": "停止接收",
+    "stopReceivingConfirm": "停止接收这个邮箱？",
+    "stopReceivingDescription": "这只会从皇帝邮箱列表移除 {email}，不会删除原用户的邮箱或任何历史邮件。",
+    "stopReceivingSuccess": "已停止接收，原邮箱和邮件未被删除",
+    "stopReceivingFailed": "停止接收失败",
     "error": "错误",
     "success": "成功"
   },

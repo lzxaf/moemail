@@ -29,6 +29,12 @@
     "deleteDescription": "確定要刪除郵箱 {email} 嗎？此操作將同時刪除該郵箱中的所有郵件，且不可恢復。",
     "deleteSuccess": "郵箱已刪除",
     "deleteFailed": "刪除郵箱失敗",
+    "receiving": "皇帝接收",
+    "stopReceiving": "停止接收",
+    "stopReceivingConfirm": "停止接收此郵箱？",
+    "stopReceivingDescription": "這只會從皇帝郵箱列表移除 {email}，不會刪除原使用者的郵箱或任何歷史郵件。",
+    "stopReceivingSuccess": "已停止接收，原郵箱與郵件未被刪除",
+    "stopReceivingFailed": "停止接收失敗",
     "error": "錯誤",
     "success": "成功"
   },

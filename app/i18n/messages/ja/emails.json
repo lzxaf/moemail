@@ -29,6 +29,12 @@
     "deleteDescription": "メールボックス {email} を削除しますか？この操作によってメールボックス内のすべてのメールが削除され、元に戻せません。",
     "deleteSuccess": "メールボックスを削除しました",
     "deleteFailed": "メールボックスの削除に失敗しました",
+    "receiving": "購読中",
+    "stopReceiving": "受信を停止",
+    "stopReceivingConfirm": "このメールボックスの受信を停止しますか？",
+    "stopReceivingDescription": "皇帝の受信箱から {email} を外すだけで、元ユーザーのメールボックスや過去のメールは削除されません。",
+    "stopReceivingSuccess": "受信を停止しました。元のメールボックスとメールは削除されていません",
+    "stopReceivingFailed": "受信の停止に失敗しました",
     "error": "エラー",
     "success": "成功"
   },

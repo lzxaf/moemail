@@ -9,6 +9,10 @@ import {
   adminMailboxRegistrationSchema,
   isConfiguredEmailDomain,
 } from "@/lib/validation"
+import {
+  addReceivedMailboxId,
+  removeReceivedMailboxId,
+} from "@/lib/emperor-mailboxes"
 
 export const runtime = "edge"
 
@@ -37,7 +41,8 @@ export async function POST(request: Request) {
   }
 
   const { address } = parsed.data
-  const domainConfig = await getRequestContext().env.SITE_CONFIG.get("EMAIL_DOMAINS")
+  const kv = getRequestContext().env.SITE_CONFIG
+  const domainConfig = await kv.get("EMAIL_DOMAINS")
   if (!isConfiguredEmailDomain(address, domainConfig)) {
     return Response.json({ error: "邮箱域名不在网站配置中", code: "INVALID_DOMAIN" }, { status: 400 })
   }
@@ -55,9 +60,13 @@ export async function POST(request: Request) {
         .set({ userId: ownerId, expiresAt: PERMANENT_EXPIRY })
         .where(eq(emails.id, existing.id))
 
+      const subscribed = ownerId !== emperorId
+      if (subscribed) await addReceivedMailboxId(kv, existing.id)
+
       return Response.json({
         mailbox: { id: existing.id, address: existing.address, ownerId },
         created: false,
+        subscribed,
       })
     }
 
@@ -70,10 +79,29 @@ export async function POST(request: Request) {
       })
       .returning({ id: emails.id, address: emails.address, ownerId: emails.userId })
 
-    return Response.json({ mailbox, created: true })
+    return Response.json({ mailbox, created: true, subscribed: false })
   } catch (error) {
     console.error("Failed to register admin mailbox:", error)
     return Response.json({ error: "登记邮箱失败", code: "REGISTER_FAILED" }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: Request) {
+  if (!await checkPermission(PERMISSIONS.MANAGE_USERS_MAILBOX)) {
+    return Response.json({ error: "权限不足" }, { status: 403 })
+  }
+
+  const mailboxId = new URL(request.url).searchParams.get("emailId")
+  if (!mailboxId) {
+    return Response.json({ error: "缺少邮箱 ID" }, { status: 400 })
+  }
+
+  try {
+    await removeReceivedMailboxId(getRequestContext().env.SITE_CONFIG, mailboxId)
+    return Response.json({ success: true })
+  } catch (error) {
+    console.error("Failed to stop receiving admin mailbox:", error)
+    return Response.json({ error: "停止接收失败" }, { status: 500 })
   }
 }
 

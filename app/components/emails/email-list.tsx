@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import { useTranslations } from "next-intl"
 import { CreateDialog } from "./create-dialog"
 import { ShareDialog } from "./share-dialog"
-import { Mail, RefreshCw, Trash2 } from "lucide-react"
+import { Mail, RefreshCw, Trash2, Unlink } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useThrottle } from "@/hooks/use-throttle"
@@ -30,6 +30,7 @@ interface Email {
   address: string
   createdAt: number
   expiresAt: number
+  subscribed?: boolean
 }
 
 interface EmailListProps {
@@ -136,7 +137,9 @@ export function EmailList({ onEmailSelect, selectedEmailId, managedUserId }: Ema
 
   const handleDelete = async (email: Email) => {
     try {
-      const response = await fetch(`/api/emails/${email.id}`, {
+      const response = await fetch(email.subscribed
+        ? `/api/admin/mailboxes?emailId=${encodeURIComponent(email.id)}`
+        : `/api/emails/${email.id}`, {
         method: "DELETE"
       })
 
@@ -155,7 +158,7 @@ export function EmailList({ onEmailSelect, selectedEmailId, managedUserId }: Ema
 
       toast({
         title: t("success"),
-        description: t("deleteSuccess")
+        description: email.subscribed ? t("stopReceivingSuccess") : t("deleteSuccess")
       })
 
       if (selectedEmailId === email.id) {
@@ -164,7 +167,7 @@ export function EmailList({ onEmailSelect, selectedEmailId, managedUserId }: Ema
     } catch {
       toast({
         title: t("error"),
-        description: t("deleteFailed"),
+        description: email.subscribed ? t("stopReceivingFailed") : t("deleteFailed"),
         variant: "destructive"
       })
     } finally {
@@ -216,16 +219,21 @@ export function EmailList({ onEmailSelect, selectedEmailId, managedUserId }: Ema
                   <Mail className="h-4 w-4 text-primary/60" />
                   <div className="truncate flex-1">
                     <div className="font-medium truncate">{email.address}</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
                       {new Date(email.expiresAt).getFullYear() === 9999 ? (
-                        t("permanent")
+                        <span>{t("permanent")}</span>
                       ) : (
-                        `${t("expiresAt")}: ${new Date(email.expiresAt).toLocaleString()}`
+                        <span>{`${t("expiresAt")}: ${new Date(email.expiresAt).toLocaleString()}`}</span>
+                      )}
+                      {email.subscribed && (
+                        <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                          {t("receiving")}
+                        </span>
                       )}
                     </div>
                   </div>
                   <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 flex gap-1" onClick={(e) => e.stopPropagation()}>
-                    {!managedUserId && <ShareDialog emailId={email.id} emailAddress={email.address} />}
+                    {!managedUserId && !email.subscribed && <ShareDialog emailId={email.id} emailAddress={email.address} />}
                     <Button
                       variant="ghost"
                       size="icon"
@@ -234,9 +242,11 @@ export function EmailList({ onEmailSelect, selectedEmailId, managedUserId }: Ema
                         e.stopPropagation()
                         setEmailToDelete(email)
                       }}
-                      aria-label={tCommon("delete")}
+                      aria-label={email.subscribed ? t("stopReceiving") : tCommon("delete")}
                     >
-                      <Trash2 className="h-4 w-4 text-destructive" />
+                      {email.subscribed
+                        ? <Unlink className="h-4 w-4" />
+                        : <Trash2 className="h-4 w-4 text-destructive" />}
                     </Button>
                   </div>
                 </div>
@@ -258,18 +268,22 @@ export function EmailList({ onEmailSelect, selectedEmailId, managedUserId }: Ema
       <AlertDialog open={!!emailToDelete} onOpenChange={() => setEmailToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("deleteConfirm")}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {emailToDelete?.subscribed ? t("stopReceivingConfirm") : t("deleteConfirm")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              {t("deleteDescription", { email: emailToDelete?.address || "" })}
+              {emailToDelete?.subscribed
+                ? t("stopReceivingDescription", { email: emailToDelete.address })
+                : t("deleteDescription", { email: emailToDelete?.address || "" })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-destructive hover:bg-destructive/90"
+              className={emailToDelete?.subscribed ? "" : "bg-destructive hover:bg-destructive/90"}
               onClick={() => emailToDelete && handleDelete(emailToDelete)}
             >
-              {tCommon("delete")}
+              {emailToDelete?.subscribed ? t("stopReceiving") : tCommon("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

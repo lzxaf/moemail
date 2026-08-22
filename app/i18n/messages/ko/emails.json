@@ -29,6 +29,12 @@
     "deleteDescription": "{email}을(를) 삭제하시겠습니까? 이 메일함의 모든 메시지도 함께 삭제되며 되돌릴 수 없습니다.",
     "deleteSuccess": "이메일이 성공적으로 삭제되었습니다",
     "deleteFailed": "이메일 삭제에 실패했습니다",
+    "receiving": "구독 중",
+    "stopReceiving": "수신 중지",
+    "stopReceivingConfirm": "이 메일함 수신을 중지하시겠습니까?",
+    "stopReceivingDescription": "황제 메일함 목록에서 {email}만 제거하며, 원래 사용자의 메일함과 이전 메일은 삭제되지 않습니다.",
+    "stopReceivingSuccess": "수신을 중지했으며 원래 메일함과 메일은 삭제되지 않았습니다",
+    "stopReceivingFailed": "메일함 수신 중지에 실패했습니다",
     "error": "오류",
     "success": "성공"
   },

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import { useLocale, useTranslations } from "next-intl"
 import { ChevronLeft, ChevronRight, ExternalLink, Loader2, Mail, Search, Trash2, User2 } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -35,6 +36,7 @@ const PAGE_SIZE = 10
 export function MailboxPanel() {
   const t = useTranslations("profile.mailbox")
   const locale = useLocale()
+  const router = useRouter()
   const { config } = useConfig()
   const [mailboxes, setMailboxes] = useState<MailboxItem[]>([])
   const [total, setTotal] = useState(0)
@@ -98,8 +100,9 @@ export function MailboxPanel() {
         body: JSON.stringify({ address: newAddress }),
       })
       const data = await response.json() as {
-        mailbox?: { address: string }
+        mailbox?: { id: string; address: string }
         created?: boolean
+        subscribed?: boolean
         code?: string
       }
 
@@ -114,8 +117,14 @@ export function MailboxPanel() {
       }
 
       setNewAddress("")
-      setSearch(data.mailbox.address)
-      toast({ title: data.created ? t("registerSuccess") : t("existingSuccess") })
+      toast({
+        title: data.subscribed
+          ? t("subscribedSuccess")
+          : data.created
+            ? t("registerSuccess")
+            : t("existingSuccess"),
+      })
+      router.push(`/${locale}/moe`)
     } catch {
       setRegistrationError(t("registerFailed"))
     } finally {

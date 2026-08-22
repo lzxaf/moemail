@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button"
 interface Email {
   id: string
   address: string
+  subscribed?: boolean
 }
 
 interface ManagedUser {
@@ -42,6 +43,7 @@ export function ThreeColumnLayout({
   const { copyToClipboard } = useCopy()
   const { canSend: canSendEmails } = useSendPermission()
   const managedUserLabel = managedUser?.name || managedUser?.username || managedUser?.email || ""
+  const readOnly = !!managedUser || !!selectedEmail?.subscribed
 
   const columnClass = "border-2 border-primary/20 bg-background rounded-lg overflow-hidden flex flex-col"
   const headerClass = "p-2 border-b-2 border-primary/20 flex items-center justify-between shrink-0"
@@ -116,7 +118,7 @@ export function ThreeColumnLayout({
                       <Copy className="size-4" />
                     </div>
                   </div>
-                  {selectedEmail && canSendEmails && !managedUser && (
+                  {selectedEmail && canSendEmails && !readOnly && (
                     <SendDialog
                       emailId={selectedEmail.id}
                       fromAddress={selectedEmail.address}
@@ -136,7 +138,7 @@ export function ThreeColumnLayout({
                 onMessageSelect={handleMessageSelect}
                 selectedMessageId={selectedMessageId}
                 refreshTrigger={refreshTrigger}
-                managed={!!managedUser}
+                managed={readOnly}
               />
             </div>
           )}
@@ -155,7 +157,7 @@ export function ThreeColumnLayout({
                 messageId={selectedMessageId}
                 messageType={selectedMessageType}
                 onClose={() => setSelectedMessageId(null)}
-                managed={!!managedUser}
+                managed={readOnly}
               />
             </div>
           )}
@@ -200,7 +202,7 @@ export function ThreeColumnLayout({
                       <Copy className="size-4" />
                     </div>
                   </div>
-                  {canSendEmails && !managedUser && (
+                  {canSendEmails && !readOnly && (
                     <SendDialog
                       emailId={selectedEmail.id}
                       fromAddress={selectedEmail.address}
@@ -215,7 +217,7 @@ export function ThreeColumnLayout({
                   onMessageSelect={handleMessageSelect}
                   selectedMessageId={selectedMessageId}
                   refreshTrigger={refreshTrigger}
-                  managed={!!managedUser}
+                  managed={readOnly}
                 />
               </div>
             </div>
@@ -238,7 +240,7 @@ export function ThreeColumnLayout({
                   messageId={selectedMessageId}
                   messageType={selectedMessageType}
                   onClose={() => setSelectedMessageId(null)}
-                  managed={!!managedUser}
+                  managed={readOnly}
                 />
               </div>
             </div>

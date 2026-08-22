@@ -29,6 +29,12 @@
     "deleteDescription": "Are you sure you want to delete {email}? This will also delete all messages in this mailbox and cannot be undone.",
     "deleteSuccess": "Email deleted successfully",
     "deleteFailed": "Failed to delete email",
+    "receiving": "Subscribed",
+    "stopReceiving": "Stop Receiving",
+    "stopReceivingConfirm": "Stop receiving this mailbox?",
+    "stopReceivingDescription": "This only removes {email} from the emperor inbox. The original user's mailbox and all historical messages remain untouched.",
+    "stopReceivingSuccess": "Stopped receiving; the original mailbox and messages were not deleted",
+    "stopReceivingFailed": "Failed to stop receiving this mailbox",
     "error": "Error",
     "success": "Success"
   },
