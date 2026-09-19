@@ -60,6 +60,7 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const [loadingMore, setLoadingMore] = useState(false)
   const pollTimeoutRef = useRef<Timer>(null)
+  const requestInFlightRef = useRef(false)
   const messagesRef = useRef<Message[]>([]) // 添加 ref 来追踪最新的消息列表
   const [total, setTotal] = useState(0)
   const [messageToDelete, setMessageToDelete] = useState<Message | null>(null)
@@ -71,6 +72,9 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
   }, [messages])
 
   const fetchMessages = async (cursor?: string) => {
+    if (requestInFlightRef.current) return
+    requestInFlightRef.current = true
+
     try {
       const url = new URL(`/api/emails/${email.id}`, window.location.origin)
       if (messageType === 'sent') {
@@ -111,6 +115,7 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
     } catch (error) {
       console.error("Failed to fetch messages:", error)
     } finally {
+      requestInFlightRef.current = false
       setLoading(false)
       setRefreshing(false)
       setLoadingMore(false)
@@ -120,7 +125,7 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
   const startPolling = () => {
     stopPolling()
     pollTimeoutRef.current = setInterval(() => {
-      if (!refreshing && !loadingMore) {
+      if (document.visibilityState === "visible") {
         fetchMessages()
       }
     }, EMAIL_CONFIG.POLL_INTERVAL)
@@ -134,12 +139,13 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
   }
 
   const handleRefresh = async () => {
+    if (requestInFlightRef.current) return
     setRefreshing(true)
     await fetchMessages()
   }
 
   const handleScroll = useThrottle((e: React.UIEvent<HTMLDivElement>) => {
-    if (loadingMore) return
+    if (loadingMore || requestInFlightRef.current) return
 
     const { scrollHeight, scrollTop, clientHeight } = e.currentTarget
     const threshold = clientHeight * 1.5
@@ -198,8 +204,14 @@ export function MessageList({ email, messageType, onMessageSelect, selectedMessa
     fetchMessages()
     startPolling()
 
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") fetchMessages()
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+
     return () => {
       stopPolling()
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email.id])

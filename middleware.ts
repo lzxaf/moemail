@@ -1,9 +1,7 @@
 import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 import { i18n, type Locale } from "@/i18n/config"
-import { PERMISSIONS } from "@/lib/permissions"
-import { checkPermission } from "@/lib/auth"
-import { Permission } from "@/lib/permissions"
+import { hasPermission, PERMISSIONS, Permission, Role } from "@/lib/permissions"
 import { handleApiKeyAuth } from "@/lib/apiKey"
 
 const API_PERMISSIONS: Record<string, Permission> = {
@@ -26,8 +24,9 @@ export async function middleware(request: Request) {
       return NextResponse.next()
     }
 
-    request.headers.delete("X-User-Id")
-    const apiKey = request.headers.get("X-API-Key")
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.delete("X-User-Id")
+    const apiKey = requestHeaders.get("X-API-Key")
     if (apiKey) {
       return handleApiKeyAuth(apiKey, pathname)
     }
@@ -40,13 +39,22 @@ export async function middleware(request: Request) {
       )
     }
 
+    const sessionUserId = session.user.id
+    if (!sessionUserId) {
+      return NextResponse.json({ error: "未授权" }, { status: 401 })
+    }
+    requestHeaders.set("X-User-Id", sessionUserId)
+
     if (pathname === '/api/config' && request.method === 'GET') {
-      return NextResponse.next()
+      return NextResponse.next({ request: { headers: requestHeaders } })
     }
 
     for (const [route, permission] of Object.entries(API_PERMISSIONS)) {
       if (pathname.startsWith(route)) {
-        const hasAccess = await checkPermission(permission)
+        const hasAccess = hasPermission(
+          (session.user.roles || []).map(({ name }) => name) as Role[],
+          permission
+        )
 
         if (!hasAccess) {
           return NextResponse.json(
@@ -57,7 +65,7 @@ export async function middleware(request: Request) {
         break
       }
     }
-    return NextResponse.next()
+    return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
   // Pages: 语言前缀

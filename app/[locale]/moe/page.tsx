@@ -3,8 +3,7 @@ import { ThreeColumnLayout } from "@/components/emails/three-column-layout"
 import { NoPermissionDialog } from "@/components/no-permission-dialog"
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { checkPermission } from "@/lib/auth"
-import { PERMISSIONS } from "@/lib/permissions"
+import { hasPermission, PERMISSIONS, Role } from "@/lib/permissions"
 import type { Locale } from "@/i18n/config"
 import { createDb } from "@/lib/db"
 import { emails, users } from "@/lib/schema"
@@ -28,9 +27,10 @@ export default async function MoePage({
     redirect(`/${locale}`)
   }
 
-  const hasPermission = await checkPermission(PERMISSIONS.MANAGE_EMAIL)
+  const sessionRoles = (session.user.roles || []).map(({ name }) => name) as Role[]
+  const canManageEmail = hasPermission(sessionRoles, PERMISSIONS.MANAGE_EMAIL)
   const canManageUsersMailbox = userId
-    ? await checkPermission(PERMISSIONS.MANAGE_USERS_MAILBOX)
+    ? hasPermission(sessionRoles, PERMISSIONS.MANAGE_USERS_MAILBOX)
     : false
   const managedUser = userId && canManageUsersMailbox
     ? await createDb().query.users.findFirst({
@@ -60,7 +60,7 @@ export default async function MoePage({
             managedUser={managedUser || undefined}
             initialEmail={initialEmail}
           />
-          {!hasPermission && <NoPermissionDialog />}
+          {!canManageEmail && <NoPermissionDialog />}
         </main>
       </div>
     </div>

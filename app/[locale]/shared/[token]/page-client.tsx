@@ -55,6 +55,7 @@ export function SharedEmailPageClient({
   const [total, setTotal] = useState(initialTotal)
   const [refreshing, setRefreshing] = useState(false)
   const pollTimeoutRef = useRef<Timer | null>(null)
+  const requestInFlightRef = useRef(false)
   const messagesRef = useRef<Message[]>(initialMessages)
 
   // 当 messages 改变时更新 ref
@@ -63,6 +64,9 @@ export function SharedEmailPageClient({
   }, [messages])
 
   const fetchMessages = async (cursor?: string) => {
+    if (requestInFlightRef.current) return
+    requestInFlightRef.current = true
+
     try {
       if (cursor) {
         setLoadingMore(true)
@@ -112,6 +116,7 @@ export function SharedEmailPageClient({
     } catch (err) {
       console.error("Failed to fetch messages:", err)
     } finally {
+      requestInFlightRef.current = false
       setLoadingMore(false)
       setRefreshing(false)
     }
@@ -120,7 +125,7 @@ export function SharedEmailPageClient({
   const startPolling = () => {
     stopPolling()
     pollTimeoutRef.current = setInterval(() => {
-      if (!refreshing && !loadingMore) {
+      if (document.visibilityState === "visible") {
         fetchMessages()
       }
     }, EMAIL_CONFIG.POLL_INTERVAL)
@@ -134,6 +139,7 @@ export function SharedEmailPageClient({
   }
 
   const handleRefresh = async () => {
+    if (requestInFlightRef.current) return
     setRefreshing(true)
     await fetchMessages()
   }
@@ -141,14 +147,19 @@ export function SharedEmailPageClient({
   // 启动轮询
   useEffect(() => {
     startPolling()
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") fetchMessages()
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange)
     return () => {
       stopPolling()
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
   const handleLoadMore = () => {
-    if (nextCursor && !loadingMore) {
+    if (nextCursor && !loadingMore && !requestInFlightRef.current) {
       fetchMessages(nextCursor)
     }
   }
