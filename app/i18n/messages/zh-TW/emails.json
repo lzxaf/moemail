@@ -52,7 +52,17 @@
     "create": "建立",
     "creating": "建立中...",
     "success": "郵箱建立成功",
-    "failed": "建立郵箱失敗"
+    "failed": "建立郵箱失敗",
+    "emailInUse": "此郵箱已被使用",
+    "transferDescription": "輸入管理員密碼後，可將此郵箱及歷史郵件轉移到你的帳戶；目前擁有者將失去存取權。",
+    "adminPassword": "管理員密碼",
+    "adminPasswordPlaceholder": "輸入管理員密碼",
+    "transfer": "強制轉移",
+    "transferring": "轉移中...",
+    "transferSuccess": "郵箱及歷史郵件已轉移到你的帳戶",
+    "transferFailed": "郵箱轉移失敗",
+    "invalidAdminPassword": "管理員密碼錯誤",
+    "alreadyOwner": "此郵箱已屬於你的帳戶"
   },
   "messages": {
     "received": "收件匣",

@@ -52,7 +52,17 @@
     "create": "생성",
     "creating": "생성 중...",
     "success": "이메일이 성공적으로 생성되었습니다",
-    "failed": "이메일 생성에 실패했습니다"
+    "failed": "이메일 생성에 실패했습니다",
+    "emailInUse": "이 이메일함은 이미 사용 중입니다",
+    "transferDescription": "관리자 비밀번호를 입력하면 이 메일함과 이전 메일을 내 계정으로 이전할 수 있습니다. 현재 소유자는 액세스할 수 없게 됩니다.",
+    "adminPassword": "관리자 비밀번호",
+    "adminPasswordPlaceholder": "관리자 비밀번호 입력",
+    "transfer": "강제 이전",
+    "transferring": "이전 중...",
+    "transferSuccess": "메일함과 이전 메일이 내 계정으로 이전되었습니다",
+    "transferFailed": "메일함 이전에 실패했습니다",
+    "invalidAdminPassword": "관리자 비밀번호가 올바르지 않습니다",
+    "alreadyOwner": "이 메일함은 이미 내 계정에 속해 있습니다"
   },
   "messages": {
     "received": "받은 편지함",

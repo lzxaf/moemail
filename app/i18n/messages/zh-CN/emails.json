@@ -52,7 +52,17 @@
     "create": "创建",
     "creating": "创建中...",
     "success": "邮箱创建成功",
-    "failed": "创建邮箱失败"
+    "failed": "创建邮箱失败",
+    "emailInUse": "该邮箱已被占用",
+    "transferDescription": "输入管理员密码后，可将该邮箱及历史邮件转移到你的账户；原用户将失去此邮箱。",
+    "adminPassword": "管理员密码",
+    "adminPasswordPlaceholder": "输入管理员密码",
+    "transfer": "强制转移",
+    "transferring": "转移中...",
+    "transferSuccess": "邮箱及历史邮件已转移到你的账户",
+    "transferFailed": "邮箱转移失败",
+    "invalidAdminPassword": "管理员密码错误",
+    "alreadyOwner": "该邮箱已经属于你的账户"
   },
   "messages": {
     "received": "收件箱",

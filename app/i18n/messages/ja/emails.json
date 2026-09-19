@@ -52,7 +52,17 @@
     "create": "作成",
     "creating": "作成中...",
     "success": "メールボックスを作成しました",
-    "failed": "メールボックスの作成に失敗しました"
+    "failed": "メールボックスの作成に失敗しました",
+    "emailInUse": "このメールボックスは使用中です",
+    "transferDescription": "管理者パスワードを入力すると、このメールボックスと過去のメールをあなたのアカウントへ移管できます。現在の所有者はアクセスできなくなります。",
+    "adminPassword": "管理者パスワード",
+    "adminPasswordPlaceholder": "管理者パスワードを入力",
+    "transfer": "強制移管",
+    "transferring": "移管中...",
+    "transferSuccess": "メールボックスと過去のメールを移管しました",
+    "transferFailed": "メールボックスの移管に失敗しました",
+    "invalidAdminPassword": "管理者パスワードが正しくありません",
+    "alreadyOwner": "このメールボックスはすでにあなたのアカウントに属しています"
   },
   "messages": {
     "received": "受信箱",

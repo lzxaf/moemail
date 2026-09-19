@@ -52,7 +52,17 @@
     "create": "Create",
     "creating": "Creating...",
     "success": "Email created successfully",
-    "failed": "Failed to create email"
+    "failed": "Failed to create email",
+    "emailInUse": "This email address is already in use",
+    "transferDescription": "Enter the administrator password to transfer this mailbox and its history to your account. The current owner will lose access.",
+    "adminPassword": "Administrator Password",
+    "adminPasswordPlaceholder": "Enter administrator password",
+    "transfer": "Force Transfer",
+    "transferring": "Transferring...",
+    "transferSuccess": "Mailbox and history transferred to your account",
+    "transferFailed": "Failed to transfer mailbox",
+    "invalidAdminPassword": "Incorrect administrator password",
+    "alreadyOwner": "This mailbox already belongs to your account"
   },
   "messages": {
     "received": "Received",

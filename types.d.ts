@@ -5,6 +5,7 @@ declare global {
   interface CloudflareEnv {
     DB: D1Database;
     SITE_CONFIG: KVNamespace;
+    ADMIN_TRANSFER_PASSWORD?: string;
   }
 
   interface Window {
