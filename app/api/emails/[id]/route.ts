@@ -113,8 +113,20 @@ export async function GET(
 
     const orderByTime = messageType === 'sent' ? messages.sentAt : messages.receivedAt
 
+    const includeFull = searchParams.get('full') === 'true' || searchParams.get('include_content') === 'true'
     const results = await db.query.messages.findMany({
       where: and(...conditions),
+      columns: includeFull
+        ? undefined
+        : {
+            id: true,
+            fromAddress: true,
+            toAddress: true,
+            subject: true,
+            content: true,
+            sentAt: true,
+            receivedAt: true,
+          },
       orderBy: (messages, { desc }) => [
         desc(orderByTime),
         desc(messages.id)
@@ -140,7 +152,7 @@ export async function GET(
         to_address: msg?.toAddress,
         subject: msg.subject,
         content: msg.content,
-        html: msg.html,
+        html: includeFull ? (msg as { html?: string | null }).html : undefined,
         sent_at: msg.sentAt?.getTime(),
         received_at: msg.receivedAt?.getTime()
       })),

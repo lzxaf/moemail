@@ -85,6 +85,14 @@ export async function GET(
 
     const results = await db.query.messages.findMany({
       where: and(...conditions),
+      columns: {
+        id: true,
+        fromAddress: true,
+        toAddress: true,
+        subject: true,
+        receivedAt: true,
+        sentAt: true,
+      },
       orderBy: (messages, { desc }) => [
         desc(messages.receivedAt),
         desc(messages.id)

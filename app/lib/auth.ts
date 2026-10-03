@@ -26,6 +26,9 @@ const ROLE_DESCRIPTIONS: Record<Role, string> = {
   [ROLES.CIVILIAN]: "平民（普通用户）",
 }
 
+// JWT 中缓存的用户信息（角色/用户名/登录方式）最长多久从数据库刷新一次
+const SESSION_REFRESH_INTERVAL_MS = 5 * 60 * 1000
+
 const getDefaultRole = async (): Promise<Role> => {
   const defaultRole = await getRequestContext().env.SITE_CONFIG.get("DEFAULT_ROLE")
 
@@ -203,7 +206,7 @@ export const {
     },
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id
         token.name = user.name || user.username
@@ -212,26 +215,58 @@ export const {
         token.passwordVersion = user.passwordVersion
       }
 
-      if (token.id) {
-        const db = createDb()
-        const currentUser = await db.query.users.findFirst({
-          where: eq(users.id, token.id as string),
+      if (!token.id) return token
+
+      // 为避免 Cloudflare Worker CPU 超限（Error 1102），用户信息/角色缓存在 JWT 中，
+      // 仅在登录、主动 update() 或缓存过期时才查询数据库。
+      const now = Date.now()
+      const isStale =
+        !token.refreshedAt ||
+        now - (token.refreshedAt as number) > SESSION_REFRESH_INTERVAL_MS ||
+        !token.roles
+      if (!user && trigger !== "update" && !isStale) {
+        return token
+      }
+
+      const db = createDb()
+      const userId = token.id as string
+      const [currentUser, roleRecords, userAccounts] = await Promise.all([
+        db.query.users.findFirst({
+          where: eq(users.id, userId),
           columns: { password: true, username: true },
-        })
+        }),
+        db.query.userRoles.findMany({
+          where: eq(userRoles.userId, userId),
+          with: { role: true },
+        }),
+        db.query.accounts.findMany({
+          where: eq(accounts.userId, userId),
+          columns: { provider: true },
+        }),
+      ])
 
-        if (currentUser?.username) {
-          token.username = currentUser.username
-        }
+      if (!currentUser) return null
 
-        if (token.passwordVersion) {
-          if (!currentUser?.password) return null
-
-          const currentVersion = await getPasswordVersion(currentUser.password)
-          if (!isPasswordVersionValid(token.passwordVersion, currentVersion)) {
-            return null
-          }
+      if (token.passwordVersion) {
+        if (!currentUser.password) return null
+        const currentVersion = await getPasswordVersion(currentUser.password)
+        if (!isPasswordVersionValid(token.passwordVersion, currentVersion)) {
+          return null
         }
       }
+
+      let roleNames = roleRecords.map((ur) => ur.role.name)
+      if (!roleNames.length) {
+        const defaultRole = await getDefaultRole()
+        const role = await findOrCreateRole(db, defaultRole)
+        await assignRoleToUser(db, userId, role.id)
+        roleNames = [role.name]
+      }
+
+      if (currentUser.username) token.username = currentUser.username
+      token.roles = roleNames
+      token.providers = userAccounts.map((account) => account.provider)
+      token.refreshedAt = now
       return token
     },
     async session({ session, token }) {
@@ -240,42 +275,8 @@ export const {
         session.user.name = token.name as string
         session.user.username = token.username as string
         session.user.image = token.image as string
-
-        const db = createDb()
-        const currentUser = await db.query.users.findFirst({
-          where: eq(users.id, session.user.id),
-          columns: { username: true },
-        })
-        if (currentUser?.username) {
-          session.user.username = currentUser.username
-        }
-
-        let userRoleRecords = await db.query.userRoles.findMany({
-          where: eq(userRoles.userId, session.user.id),
-          with: { role: true },
-        })
-
-        if (!userRoleRecords.length) {
-          const defaultRole = await getDefaultRole()
-          const role = await findOrCreateRole(db, defaultRole)
-          await assignRoleToUser(db, session.user.id, role.id)
-          userRoleRecords = [{
-            userId: session.user.id,
-            roleId: role.id,
-            createdAt: new Date(),
-            role: role
-          }]
-        }
-
-        session.user.roles = userRoleRecords.map(ur => ({
-          name: ur.role.name,
-        }))
-
-        const userAccounts = await db.query.accounts.findMany({
-          where: eq(accounts.userId, session.user.id),
-        })
-
-        session.user.providers = userAccounts.map(account => account.provider)
+        session.user.roles = ((token.roles as string[] | undefined) || []).map((name) => ({ name }))
+        session.user.providers = (token.providers as string[] | undefined) || []
       }
 
       return session
