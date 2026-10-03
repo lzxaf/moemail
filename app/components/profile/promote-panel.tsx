@@ -8,8 +8,10 @@ import { useState, useEffect, useCallback } from "react"
 import { useLocale } from "next-intl"
 import Link from "next/link"
 import { useToast } from "@/components/ui/use-toast"
+import { useSession } from "next-auth/react"
 import { ROLES, Role } from "@/lib/permissions"
 import { ResetPasswordButton } from "./reset-password-button"
+import { EditEmperorCredentialsButton } from "./edit-emperor-credentials-button"
 import {
   Select,
   SelectContent,
@@ -51,6 +53,8 @@ const PAGE_SIZE = 10
 export function PromotePanel() {
   const t = useTranslations("profile.promote")
   const tCard = useTranslations("profile.card")
+  const { data: session } = useSession()
+  const isCurrentUserEmperor = session?.user?.roles?.some((r) => r.name === ROLES.EMPEROR)
   const [users, setUsers] = useState<UserItem[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -229,9 +233,36 @@ export function PromotePanel() {
                   </div>
 
                   {isEmperor ? (
-                    <div className="flex items-center gap-1.5 text-sm text-amber-600 font-medium px-3">
-                      <Crown className="w-4 h-4" />
-                      {roleNames[ROLES.EMPEROR]}
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 text-sm text-amber-600 font-medium px-3">
+                        <Crown className="w-4 h-4" />
+                        {roleNames[ROLES.EMPEROR]}
+                      </div>
+                      {isCurrentUserEmperor && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-primary"
+                            asChild
+                          >
+                            <Link
+                              href={`/${locale}/moe?userId=${user.id}`}
+                              title={t("viewMailbox")}
+                              aria-label={t("viewMailboxFor", {
+                                name: user.name || user.username || user.email || "",
+                              })}
+                            >
+                              <Mail className="w-4 h-4" />
+                            </Link>
+                          </Button>
+                          <EditEmperorCredentialsButton
+                            userId={user.id}
+                            currentUsername={user.username}
+                            onSuccess={fetchUsers}
+                          />
+                        </>
+                      )}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">

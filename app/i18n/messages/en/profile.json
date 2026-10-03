@@ -3,6 +3,8 @@
   "card": {
     "title": "User Information",
     "name": "Name",
+    "unregistered": "Not set",
+    "email": "Email",
     "role": "Role",
     "roles": {
       "EMPEROR": "Emperor",
@@ -13,12 +15,27 @@
   },
   "password": {
     "title": "Change Password",
+    "accountSecurityTitle": "Account & Password",
+    "accountSecurityDesc": "Set or modify your username and password to log in directly via account and password",
     "description": "Verify your current password, then set a new login password",
+    "username": "Username",
+    "usernamePlaceholder": "Enter username (for account/password login)",
+    "usernameInvalid": "Invalid username format (1-20 letters, numbers, underscores, or dashes; cannot be email)",
+    "usernameTaken": "This username is already taken",
+    "usernameUpdated": "Username updated successfully",
+    "accountUpdated": "Account updated successfully, please log in with your new password",
+    "noChanges": "No changes made",
     "currentPassword": "Current Password",
+    "currentPasswordOptional": "Current Password (optional if forgotten)",
     "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter new password (min 8 chars, leave blank to keep unchanged)",
+    "setPassword": "Set Password",
+    "setPasswordPlaceholder": "Enter password (at least 8 characters)",
     "confirmPassword": "Confirm New Password",
     "update": "Update Password",
+    "saveChanges": "Save Changes",
     "updating": "Updating...",
+    "saving": "Saving...",
     "updateSuccess": "Password changed successfully",
     "updateFailed": "Failed to change password",
     "currentPasswordIncorrect": "Current password is incorrect",
@@ -204,6 +221,11 @@
     "resetPasswordDescription": "Set a new login password for {name}",
     "resetPasswordSuccess": "User password reset successfully",
     "resetPasswordFailed": "Failed to reset user password",
-    "resetPasswordUnavailable": "This account does not have a username"
+    "resetPasswordUnavailable": "This account does not have a username",
+    "editEmperor": "Edit Emperor Credentials",
+    "editEmperorFor": "Edit Emperor Credentials (username and password)",
+    "editEmperorTitle": "Modify Emperor Account & Password",
+    "editEmperorDescription": "Modify Emperor username and password to log in directly via account/password",
+    "editEmperorSuccess": "Emperor account info updated successfully"
   }
 }

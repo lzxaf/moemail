@@ -3,6 +3,8 @@
   "card": {
     "title": "使用者資訊",
     "name": "使用者名稱",
+    "unregistered": "未設定",
+    "email": "電子郵件",
     "role": "角色",
     "roles": {
       "EMPEROR": "皇帝",
@@ -13,12 +15,27 @@
   },
   "password": {
     "title": "修改密碼",
+    "accountSecurityTitle": "帳戶與密碼",
+    "accountSecurityDesc": "設定或修改帳戶名稱與密碼，可透過帳戶密碼直接登入",
     "description": "驗證目前密碼後設定新的登入密碼",
+    "username": "帳戶名稱",
+    "usernamePlaceholder": "請輸入帳戶名稱（用於帳號密碼登入）",
+    "usernameInvalid": "帳戶名稱格式不正確（1-20位字母、數字、底線或連字號，且不能為電子郵件）",
+    "usernameTaken": "該帳戶名稱已被佔用",
+    "usernameUpdated": "帳戶名稱修改成功",
+    "accountUpdated": "帳戶資訊更新成功，請使用新密碼重新登入",
+    "noChanges": "未做任何修改",
     "currentPassword": "目前密碼",
+    "currentPasswordOptional": "目前密碼（若忘記可留空）",
     "newPassword": "新密碼",
+    "newPasswordPlaceholder": "請輸入新密碼（至少8位，留空不修改）",
+    "setPassword": "設定密碼",
+    "setPasswordPlaceholder": "請輸入密碼（至少8位）",
     "confirmPassword": "確認新密碼",
     "update": "更新密碼",
+    "saveChanges": "儲存修改",
     "updating": "正在更新...",
+    "saving": "正在儲存...",
     "updateSuccess": "密碼修改成功",
     "updateFailed": "密碼修改失敗",
     "currentPasswordIncorrect": "目前密碼錯誤",
@@ -204,6 +221,11 @@
     "resetPasswordDescription": "為 {name} 設定新的登入密碼",
     "resetPasswordSuccess": "使用者密碼已重設",
     "resetPasswordFailed": "重設使用者密碼失敗",
-    "resetPasswordUnavailable": "此帳號沒有可用的使用者名稱"
+    "resetPasswordUnavailable": "此帳號沒有可用的使用者名稱",
+    "editEmperor": "修改皇帝憑證",
+    "editEmperorFor": "修改皇帝憑證（帳戶名稱與密碼）",
+    "editEmperorTitle": "修改皇帝帳戶與密碼",
+    "editEmperorDescription": "修改皇帝登入帳戶名稱與密碼，之後可透過帳戶密碼直接登入",
+    "editEmperorSuccess": "皇帝帳戶資訊已更新"
   }
 }

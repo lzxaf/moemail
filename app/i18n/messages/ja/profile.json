@@ -3,6 +3,8 @@
   "card": {
     "title": "ユーザー情報",
     "name": "ユーザー名",
+    "unregistered": "未設定",
+    "email": "メールアドレス",
     "role": "ロール",
     "roles": {
       "EMPEROR": "皇帝",
@@ -13,12 +15,27 @@
   },
   "password": {
     "title": "パスワードを変更",
+    "accountSecurityTitle": "アカウントとパスワード",
+    "accountSecurityDesc": "ユーザー名とパスワードを設定・変更して、アカウントとパスワードで直接ログインできるようにします",
     "description": "現在のパスワードを確認して、新しいログインパスワードを設定します",
+    "username": "アカウント名",
+    "usernamePlaceholder": "アカウント名を入力（ログイン用）",
+    "usernameInvalid": "アカウント名の形式が無効です（1〜20文字、半角英数字、アンダースコア、ハイフンのみ、メールアドレス不可）",
+    "usernameTaken": "このアカウント名は既に使用されています",
+    "usernameUpdated": "アカウント名を更新しました",
+    "accountUpdated": "アカウント情報を更新しました。新しいパスワードで再ログインしてください",
+    "noChanges": "変更はありません",
     "currentPassword": "現在のパスワード",
+    "currentPasswordOptional": "現在のパスワード（忘れた場合は省略可）",
     "newPassword": "新しいパスワード",
+    "newPasswordPlaceholder": "新しいパスワード（8文字以上、変更しない場合は空欄）",
+    "setPassword": "パスワードを設定",
+    "setPasswordPlaceholder": "パスワードを入力（8文字以上）",
     "confirmPassword": "新しいパスワードを確認",
     "update": "パスワードを更新",
+    "saveChanges": "変更を保存",
     "updating": "更新中...",
+    "saving": "保存中...",
     "updateSuccess": "パスワードを変更しました",
     "updateFailed": "パスワードの変更に失敗しました",
     "currentPasswordIncorrect": "現在のパスワードが正しくありません",
@@ -204,6 +221,11 @@
     "resetPasswordDescription": "{name} の新しいログインパスワードを設定します",
     "resetPasswordSuccess": "ユーザーのパスワードをリセットしました",
     "resetPasswordFailed": "ユーザーのパスワードのリセットに失敗しました",
-    "resetPasswordUnavailable": "このアカウントにはユーザー名がありません"
+    "resetPasswordUnavailable": "このアカウントにはユーザー名がありません",
+    "editEmperor": "皇帝の資格情報を変更",
+    "editEmperorFor": "皇帝の資格情報（アカウント名とパスワード）を変更",
+    "editEmperorTitle": "皇帝のアカウント名とパスワードを変更",
+    "editEmperorDescription": "皇帝のアカウント名とパスワードを変更し、アカウントとパスワードで直接ログインできるようにします",
+    "editEmperorSuccess": "皇帝のアカウント情報を更新しました"
   }
 }

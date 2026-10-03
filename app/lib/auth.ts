@@ -4,7 +4,7 @@ import Google from "next-auth/providers/google"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import { createDb, Db } from "./db"
 import { accounts, users, roles, userRoles } from "./schema"
-import { eq } from "drizzle-orm"
+import { eq, or, sql } from "drizzle-orm"
 import { getRequestContext } from "@cloudflare/next-on-pages"
 import { Permission, hasPermission, PERMISSIONS, ROLES, Role } from "./permissions"
 import CredentialsProvider from "next-auth/providers/credentials"
@@ -159,7 +159,10 @@ export const {
         const db = createDb()
 
         const user = await db.query.users.findFirst({
-          where: eq(users.username, parsedCredentials.username),
+          where: or(
+            eq(users.username, parsedCredentials.username),
+            sql`LOWER(${users.username}) = LOWER(${parsedCredentials.username})`
+          ),
         })
 
         if (!user) {
@@ -209,20 +212,24 @@ export const {
         token.passwordVersion = user.passwordVersion
       }
 
-      if (token.username) {
-        // Tokens created before password-version tracking are expired once on deployment.
-        if (!token.passwordVersion) return null
-
+      if (token.id) {
         const db = createDb()
         const currentUser = await db.query.users.findFirst({
           where: eq(users.id, token.id as string),
-          columns: { password: true },
+          columns: { password: true, username: true },
         })
-        if (!currentUser?.password) return null
 
-        const currentVersion = await getPasswordVersion(currentUser.password)
-        if (!isPasswordVersionValid(token.passwordVersion, currentVersion)) {
-          return null
+        if (currentUser?.username) {
+          token.username = currentUser.username
+        }
+
+        if (token.passwordVersion) {
+          if (!currentUser?.password) return null
+
+          const currentVersion = await getPasswordVersion(currentUser.password)
+          if (!isPasswordVersionValid(token.passwordVersion, currentVersion)) {
+            return null
+          }
         }
       }
       return token
@@ -235,6 +242,14 @@ export const {
         session.user.image = token.image as string
 
         const db = createDb()
+        const currentUser = await db.query.users.findFirst({
+          where: eq(users.id, session.user.id),
+          columns: { username: true },
+        })
+        if (currentUser?.username) {
+          session.user.username = currentUser.username
+        }
+
         let userRoleRecords = await db.query.userRoles.findMany({
           where: eq(userRoles.userId, session.user.id),
           with: { role: true },

@@ -2,10 +2,10 @@ import { checkPermission } from "@/lib/auth"
 import { getUserId } from "@/lib/apiKey"
 import { createDb } from "@/lib/db"
 import { PERMISSIONS, ROLES } from "@/lib/permissions"
-import { users } from "@/lib/schema"
+import { users, userRoles } from "@/lib/schema"
 import { hashPassword } from "@/lib/utils"
-import { resetPasswordSchema } from "@/lib/validation"
-import { eq } from "drizzle-orm"
+import { adminUpdateCredentialsSchema } from "@/lib/validation"
+import { and, eq, ne, sql } from "drizzle-orm"
 
 export const runtime = "edge"
 
@@ -18,7 +18,8 @@ export async function PATCH(
   }
 
   const { id: userId } = await params
-  if (!userId || userId === await getUserId()) {
+  const currentUserId = await getUserId()
+  if (!userId) {
     return Response.json({ error: "Invalid user" }, { status: 400 })
   }
 
@@ -29,13 +30,31 @@ export async function PATCH(
     return Response.json({ error: "Invalid request" }, { status: 400 })
   }
 
-  const parsed = resetPasswordSchema.safeParse(body)
+  const parsed = adminUpdateCredentialsSchema.safeParse(body)
   if (!parsed.success) {
-    return Response.json({ error: "Invalid password" }, { status: 400 })
+    return Response.json({ error: "Invalid input" }, { status: 400 })
+  }
+
+  const { username, newPassword } = parsed.data
+  if (!username && !newPassword) {
+    return Response.json({ error: "No changes specified" }, { status: 400 })
   }
 
   try {
     const db = createDb()
+    const callerRoles = currentUserId
+      ? await db.query.userRoles.findMany({
+          where: eq(userRoles.userId, currentUserId),
+          with: { role: true },
+        })
+      : []
+    const isCallerEmperor = callerRoles.some((ur) => ur.role.name === ROLES.EMPEROR)
+
+    // 非皇帝用户不能通过管理接口修改自己的凭据
+    if (userId === currentUserId && !isCallerEmperor) {
+      return Response.json({ error: "Invalid user" }, { status: 400 })
+    }
+
     const targetUser = await db.query.users.findFirst({
       where: eq(users.id, userId),
       with: {
@@ -48,20 +67,51 @@ export async function PATCH(
     if (!targetUser) {
       return Response.json({ error: "User not found" }, { status: 404 })
     }
-    if (targetUser.userRoles.some(({ role }) => role.name === ROLES.EMPEROR)) {
-      return Response.json({ error: "Cannot reset emperor password" }, { status: 400 })
+
+    const isTargetEmperor = targetUser.userRoles.some(({ role }) => role.name === ROLES.EMPEROR)
+
+    // 只有皇帝本人能修改皇帝凭据，公爵等其他管理员禁止修改皇帝
+    if (isTargetEmperor && !isCallerEmperor) {
+      return Response.json({ error: "Cannot reset emperor password" }, { status: 403 })
     }
-    if (!targetUser.username) {
-      return Response.json({ error: "Password unavailable" }, { status: 409 })
+
+    const updateData: { username?: string; password?: string } = {}
+
+    if (username && username !== targetUser.username) {
+      const existing = await db.query.users.findFirst({
+        where: and(
+          ne(users.id, userId),
+          sql`LOWER(${users.username}) = LOWER(${username})`
+        ),
+      })
+      if (existing) {
+        return Response.json({ error: "该用户名已被占用" }, { status: 409 })
+      }
+      updateData.username = username
+    }
+
+    if (newPassword) {
+      if (!targetUser.username && !updateData.username) {
+        return Response.json({ error: "Password unavailable" }, { status: 409 })
+      }
+      updateData.password = await hashPassword(newPassword)
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return Response.json({ success: true, message: "No changes" })
     }
 
     await db.update(users)
-      .set({ password: await hashPassword(parsed.data.newPassword) })
+      .set(updateData)
       .where(eq(users.id, userId))
 
-    return Response.json({ success: true })
+    return Response.json({
+      success: true,
+      username: updateData.username || targetUser.username,
+      passwordUpdated: Boolean(updateData.password),
+    })
   } catch (error) {
-    console.error("Failed to reset user password:", error)
-    return Response.json({ error: "Failed to reset password" }, { status: 500 })
+    console.error("Failed to update user credentials:", error)
+    return Response.json({ error: "Failed to update user" }, { status: 500 })
   }
 }

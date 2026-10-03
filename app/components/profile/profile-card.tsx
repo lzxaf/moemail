@@ -109,11 +109,16 @@ export function ProfileCard({ user }: ProfileCardProps) {
                 </div>
               )}
             </div>
-            <p className="text-sm text-muted-foreground truncate mt-1">
-              {
-                user.email ? user.email : `${t("name")}: ${user.username}`
-              }
-            </p>
+            <div className="text-sm text-muted-foreground mt-1 space-y-0.5">
+              <p className="truncate">
+                {t("name")}: {user.username || t("unregistered")}
+              </p>
+              {user.email && (
+                <p className="truncate">
+                  {t("email")}: {user.email}
+                </p>
+              )}
+            </div>
             {user.roles && (
               <div className="flex gap-2 mt-2">
                 {user.roles.map(({ name }) => {
@@ -137,7 +142,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
         </div>
       </div>
 
-      {user.username && <PasswordPanel />}
+      <PasswordPanel user={user} />
 
       {canManageWebhook && (
         <div className="bg-background rounded-lg border-2 border-primary/20 p-6">

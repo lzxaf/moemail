@@ -24,6 +24,21 @@ export const resetPasswordSchema = changePasswordSchema.pick({
   newPassword: true,
 })
 
+export const updateAccountSchema = z.object({
+  username: authSchema.shape.username.optional(),
+  currentPassword: z.string().optional(),
+  newPassword: authSchema.shape.password.optional(),
+})
+
+export type UpdateAccountSchema = z.infer<typeof updateAccountSchema>
+
+export const adminUpdateCredentialsSchema = z.object({
+  username: authSchema.shape.username.optional(),
+  newPassword: authSchema.shape.password.optional(),
+})
+
+export type AdminUpdateCredentialsSchema = z.infer<typeof adminUpdateCredentialsSchema>
+
 export const adminMailboxRegistrationSchema = z.object({
   address: z.string()
     .trim()
