@@ -22,6 +22,7 @@ import {
 import { Github, Loader2, KeyRound, User2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Turnstile } from "@/components/auth/turnstile"
+import { Logo } from "@/components/ui/logo"
 
 interface TurnstileConfigProps {
   enabled: boolean
@@ -207,6 +208,9 @@ export function LoginForm({ turnstile }: LoginFormProps) {
   return (
     <Card className="w-[95%] max-w-lg border-2 border-primary/20">
       <CardHeader className="space-y-2">
+        <div className="flex justify-center mb-1">
+          <Logo />
+        </div>
         <CardTitle className="text-2xl text-center bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
           {t("title")}
         </CardTitle>
